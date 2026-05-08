@@ -1,0 +1,54 @@
+/* Design tokens. Light values are on :root; the dark theme overrides each
+   token under [data-theme="dark"] (set by the pre-paint script in index.html). */
+
+:root {
+  --bg: #fbfbf9;
+  --surface: #ffffff;
+  --surface-2: #f5f4f0;
+  --surface-hover: #f0efea;
+  --border: #e8e6e1;
+  --border-strong: #d3d0c8;
+  --text: #1c1917;
+  --text-2: #44403c;
+  --text-3: #78716c;
+  --text-faint: #a8a29e;
+  --accent: #5b6e3a;
+  --accent-hover: #4a5a2f;
+  --accent-soft: #eef1e7;
+  --accent-line: #c5d1ad;
+  --shadow-sm: 0 1px 2px rgba(28, 25, 23, 0.04);
+  --shadow-md: 0 4px 12px rgba(28, 25, 23, 0.06), 0 1px 3px rgba(28, 25, 23, 0.04);
+  --topbar-bg: rgba(251, 251, 249, 0.92);
+  --scrim: rgba(28, 25, 23, 0.4);
+  --radius: 6px;
+  --radius-lg: 10px;
+  --sidebar-w: 280px;
+  --topbar-h: 56px;
+  --content-max: 1200px;
+  --recipe-max: 760px;
+  --transition: 150ms ease;
+  --font-sans: 'Inter', system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif;
+  --font-serif: 'Source Serif 4', Georgia, 'Times New Roman', serif;
+}
+
+[data-theme="dark"] {
+  --bg: #14130f;
+  --surface: #1c1b16;
+  --surface-2: #25241e;
+  --surface-hover: #2c2b24;
+  --border: #2f2e27;
+  --border-strong: #45433b;
+  --text: #ece8de;
+  --text-2: #b8b3a4;
+  --text-3: #837e72;
+  --text-faint: #5a564c;
+  --accent: #9ab074;
+  --accent-hover: #abc285;
+  --accent-soft: #1e261a;
+  --accent-line: #3c4d2c;
+  --shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.4);
+  --shadow-md: 0 4px 14px rgba(0, 0, 0, 0.5), 0 1px 4px rgba(0, 0, 0, 0.3);
+  --topbar-bg: rgba(20, 19, 15, 0.92);
+  --scrim: rgba(0, 0, 0, 0.6);
+  color-scheme: dark;
+}

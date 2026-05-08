@@ -1,0 +1,50 @@
+/* "Plan ahead" callout injected above the Method heading when any step
+   mentions advance prep (overnight, day before, multi-hour chill, etc.).
+   Visually distinct from the Method body so it reads as preflight info. */
+
+.plan-ahead {
+  margin: 1.5rem 0;
+  padding: 0.85rem 1rem;
+  background: var(--accent-soft);
+  border: 1px solid var(--accent-line);
+  border-radius: var(--radius);
+  color: var(--text);
+}
+.plan-ahead-head {
+  display: flex;
+  align-items: center;
+  gap: 0.45rem;
+  font-size: 0.78rem;
+  font-weight: 600;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  color: var(--accent);
+  margin-bottom: 0.5rem;
+}
+.plan-ahead-head svg { flex-shrink: 0; }
+.plan-ahead-list {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 0.4rem;
+}
+.plan-ahead-list li {
+  font-size: 0.9rem;
+  line-height: 1.5;
+  color: var(--text-2);
+}
+.plan-ahead-stage {
+  display: inline-block;
+  font-size: 0.72rem;
+  font-weight: 600;
+  letter-spacing: 0.02em;
+  color: var(--accent);
+  background: var(--surface);
+  border: 1px solid var(--accent-line);
+  padding: 1px 7px;
+  border-radius: 999px;
+  margin-right: 0.4rem;
+  vertical-align: 1px;
+}

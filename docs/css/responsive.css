@@ -1,0 +1,48 @@
+/* Responsive overrides. Loaded after the base components so plain
+   `.X { ... }` rules win the cascade with the same specificity. */
+
+/* tablet (<=960px) */
+@media (max-width: 960px) {
+  .content { padding: 1.5rem 1.5rem 3rem; }
+  .topbar { padding: 0 1.5rem; }
+}
+
+/* mobile (<=720px): swap fixed sidebar for a slide-in drawer */
+@media (max-width: 720px) {
+  /* Mobile topbar is 2px taller than desktop. Bumping the variable here
+     keeps every sticky element that anchors below it (recipe-chips, TOC)
+     in sync, so they don't get clipped under the topbar. */
+  :root {
+    --topbar-h: 58px;
+  }
+  .menu-toggle { display: inline-flex; }
+  .sidebar {
+    transform: translateX(-100%);
+    transition: transform 220ms ease;
+    box-shadow: var(--shadow-md);
+    width: min(86vw, 320px);
+  }
+  body.nav-open .sidebar { transform: translateX(0); }
+  body.nav-open .sidebar-scrim { display: block; }
+  /* Hide the hamburger while the drawer is open — the X close button takes its place */
+  body.nav-open .menu-toggle { display: none; }
+  /* Shift the brand right so it doesn't sit under the hamburger when closed */
+  .sidebar-header { padding-left: 60px; }
+  body.nav-open .sidebar-header { padding-left: 1.25rem; }
+  .sidebar-close { display: inline-flex; align-items: center; justify-content: center; }
+  .main { margin-left: 0; }
+  .topbar { padding: 0 1rem 0 60px; }
+  .content { padding: 1.25rem 1rem 3rem; }
+  .page-title { font-size: 1.65rem; }
+  .recipe-hero { max-height: 240px; }
+  .markdown h1 { font-size: 1.65rem; }
+  .markdown h2 { font-size: 1.15rem; }
+  .card-grid { grid-template-columns: repeat(auto-fill, minmax(160px, 1fr)); gap: 0.75rem; }
+  .card-media { aspect-ratio: 5 / 4; }
+  .card-title { font-size: 1.08rem; }
+  .cat-grid { grid-template-columns: 1fr 1fr; }
+}
+
+@media (max-width: 420px) {
+  .cat-grid { grid-template-columns: 1fr; }
+}

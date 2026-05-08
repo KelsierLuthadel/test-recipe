@@ -1,0 +1,40 @@
+/* This file is now a thin entrypoint; every rule lives in css/ split by
+   feature, mirroring the JS modules/ structure. Import order matches the
+   original single-file order so cascade behaviour is unchanged: base
+   (tokens, reset) -> chrome -> components -> recipe features -> media
+   queries (responsive, print). */
+
+@import url('css/tokens.css');
+@import url('css/reset.css');
+@import url('css/layout.css');
+@import url('css/nav/sidebar.css');
+@import url('css/nav/topbar.css');
+@import url('css/content.css');
+@import url('css/cards.css');
+@import url('css/category.css');
+@import url('css/recipe/detail.css');
+@import url('css/recipe/toc.css');
+@import url('css/recipe/chips.css');
+@import url('css/typography.css');
+@import url('css/recipe/markdown.css');
+@import url('css/pages/search.css');
+@import url('css/ui/empty-state.css');
+@import url('css/ui/transitions.css');
+@import url('css/ui/toast.css');
+@import url('css/ui/back-to-top.css');
+@import url('css/ui/skeleton.css');
+@import url('css/recipe/actions.css');
+@import url('css/recipe/save-picker.css');
+@import url('css/responsive.css');
+@import url('css/recipe/ingredients.css');
+@import url('css/recipe/timers.css');
+@import url('css/recipe/anchors.css');
+@import url('css/recipe/notes.css');
+@import url('css/recipe/siblings.css');
+@import url('css/recipe/plan-ahead.css');
+@import url('css/recipe/cooking-mode.css');
+@import url('css/pages/settings.css');
+@import url('css/pages/collection.css');
+@import url('css/pages/pantry.css');
+@import url('css/ui/modal.css');
+@import url('css/print.css');

@@ -1,0 +1,16 @@
+/* Tap-to-strike on ingredient list items. Wired up by JS only on the
+   <li>s under the Ingredients h2; toggling the .is-struck class adds
+   line-through and dims the row. */
+
+.markdown ul li.ingredient-tappable {
+  cursor: pointer;
+  transition: opacity var(--transition), color var(--transition);
+  -webkit-tap-highlight-color: transparent;
+}
+.markdown ul li.ingredient-tappable:hover { color: var(--text); }
+.markdown ul li.is-struck {
+  text-decoration: line-through;
+  text-decoration-thickness: 1.5px;
+  opacity: 0.45;
+}
+.markdown ul li.is-struck::marker { opacity: 0.45; }

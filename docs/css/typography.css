@@ -1,0 +1,48 @@
+/* Markdown body baseline + the [data-text-size="large"] override block.
+   Kept together because the large-text rules ladder out from .markdown
+   defaults onto every component the user can scale. */
+
+.markdown {
+  font-size: 0.96rem;
+  color: var(--text-2);
+  line-height: 1.75;
+}
+
+/* larger-text accessibility mode */
+[data-text-size="large"] .markdown { font-size: 1.15rem; line-height: 1.8; }
+[data-text-size="large"] .markdown li,
+[data-text-size="large"] .markdown p { font-size: 1.05em; }
+[data-text-size="large"] .markdown h1 { font-size: 2.5rem; }
+[data-text-size="large"] .markdown h2 { font-size: 1.55rem; }
+[data-text-size="large"] .markdown h3 { font-size: 0.95rem; }
+[data-text-size="large"] .info-chip { font-size: 0.92rem; }
+[data-text-size="large"] .info-chip-label { font-size: 0.78rem; }
+[data-text-size="large"] .recipe-notes-input { font-size: 1rem; }
+
+/* page headers */
+[data-text-size="large"] .page-title { font-size: 2.5rem; }
+[data-text-size="large"] .page-sub { font-size: 1.08rem; }
+[data-text-size="large"] .page-eyebrow { font-size: 0.78rem; }
+[data-text-size="large"] .page-meta { font-size: 0.88rem; }
+[data-text-size="large"] .section-title { font-size: 0.88rem; }
+[data-text-size="large"] .section-meta { font-size: 0.88rem; }
+
+/* recipe cards */
+[data-text-size="large"] .card-title { font-size: 1.4rem; }
+[data-text-size="large"] .card-overview { font-size: 0.95rem; }
+[data-text-size="large"] .card-tag { font-size: 0.74rem; }
+[data-text-size="large"] .card-time,
+[data-text-size="large"] .card-serves { font-size: 0.82rem; }
+[data-text-size="large"] .card-tag-pill { font-size: 0.7rem; }
+
+/* category tiles */
+[data-text-size="large"] .cat-tile-name { font-size: 1.4rem; }
+[data-text-size="large"] .cat-tile-overview { font-size: 0.98rem; }
+[data-text-size="large"] .cat-tile-meta { font-size: 0.84rem; }
+
+/* tag filters and breadcrumb */
+[data-text-size="large"] .tag-chip { font-size: 0.9rem; }
+[data-text-size="large"] .breadcrumb { font-size: 0.92rem; }
+
+/* search results meta line */
+[data-text-size="large"] .search-info { font-size: 0.98rem; }

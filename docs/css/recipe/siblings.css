@@ -1,0 +1,58 @@
+/* Previous / next sibling links rendered just above the personal notes
+   section. Two-column grid so prev sticks left and next sticks right,
+   collapsing to a single column on narrow screens. */
+
+.recipe-siblings {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 0.85rem;
+  margin-top: 2rem;
+  padding-top: 1.5rem;
+  border-top: 1px solid var(--border);
+}
+.recipe-sibling {
+  display: flex;
+  align-items: center;
+  gap: 0.7rem;
+  padding: 0.85rem 1rem;
+  background: var(--surface-2);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  text-decoration: none;
+  color: var(--text);
+  transition: border-color var(--transition), background var(--transition), color var(--transition);
+}
+.recipe-sibling:hover {
+  border-color: var(--accent-line);
+  background: var(--accent-soft);
+  color: var(--accent);
+}
+.recipe-sibling-empty { background: transparent; border-color: transparent; pointer-events: none; }
+.recipe-sibling-next { justify-content: flex-end; text-align: right; }
+.recipe-sibling-arrow {
+  font-size: 1.1rem;
+  color: var(--text-3);
+  flex-shrink: 0;
+  transition: color var(--transition);
+}
+.recipe-sibling:hover .recipe-sibling-arrow { color: var(--accent); }
+.recipe-sibling-body { display: flex; flex-direction: column; min-width: 0; gap: 0.1rem; }
+.recipe-sibling-label {
+  font-size: 0.7rem;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+  color: var(--text-3);
+  font-weight: 500;
+}
+.recipe-sibling-title {
+  font-size: 0.95rem;
+  font-weight: 500;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+@media (max-width: 600px) {
+  .recipe-siblings { grid-template-columns: 1fr; }
+  .recipe-sibling-empty { display: none; }
+}

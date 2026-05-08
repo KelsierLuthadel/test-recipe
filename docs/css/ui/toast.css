@@ -1,0 +1,29 @@
+/* Bottom-centre toast notification (single instance, fades in for ~2.2s).
+   Lifts above the floating timer panel when both are visible. */
+
+.toast {
+  position: fixed;
+  left: 50%;
+  bottom: 24px;
+  transform: translate(-50%, 16px);
+  z-index: 320;
+  background: var(--text);
+  color: var(--surface);
+  padding: 0.65rem 1.1rem;
+  border-radius: 999px;
+  font-size: 0.88rem;
+  font-weight: 500;
+  box-shadow: var(--shadow-md);
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 180ms ease, transform 180ms ease;
+  max-width: calc(100vw - 32px);
+  text-align: center;
+}
+.toast.is-visible {
+  opacity: 1;
+  transform: translate(-50%, 0);
+}
+[data-theme="dark"] .toast { background: var(--surface); color: var(--text); border: 1px solid var(--border); }
+.timer-panel.is-open ~ .toast.is-visible { bottom: 96px; }
+@media print { .toast { display: none !important; } }

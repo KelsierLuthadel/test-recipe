@@ -1,0 +1,140 @@
+/* Collection picker dropdown opened from the Save button. Positioned
+   absolutely under the trigger; outside-click + Escape close it. */
+
+.save-picker {
+  position: absolute;
+  z-index: 220;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-md);
+  padding: 0.45rem;
+  min-width: 220px;
+  max-width: 320px;
+  max-height: 70vh;
+  overflow-y: auto;
+  display: none;
+}
+.save-picker.is-open { display: block; }
+.save-picker[hidden] { display: none; }
+
+.save-picker-head {
+  font-size: 0.66rem;
+  font-weight: 600;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--text-3);
+  padding: 0.4rem 0.65rem 0.3rem;
+}
+.save-picker-rows {
+  display: flex;
+  flex-direction: column;
+  gap: 1px;
+  margin-bottom: 0.35rem;
+  padding-bottom: 0.35rem;
+  border-bottom: 1px solid var(--border);
+}
+.save-picker-row {
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+  padding: 0.5rem 0.65rem;
+  border-radius: var(--radius);
+  cursor: pointer;
+  font-size: 0.9rem;
+  color: var(--text-2);
+  transition: background var(--transition), color var(--transition);
+}
+.save-picker-row:hover {
+  background: var(--surface-2);
+  color: var(--text);
+}
+.save-picker-row input[type="checkbox"] {
+  flex-shrink: 0;
+  accent-color: var(--accent);
+  width: 16px;
+  height: 16px;
+}
+.save-picker-row-name {
+  flex: 1;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.save-picker-row-tag {
+  font-size: 0.62rem;
+  font-weight: 600;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--text-3);
+  padding: 1px 6px;
+  background: var(--surface-2);
+  border-radius: 999px;
+}
+.save-picker-foot {
+  padding: 0.15rem 0.15rem 0;
+}
+.save-picker-new-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.45rem;
+  width: 100%;
+  padding: 0.55rem 0.65rem;
+  background: transparent;
+  border: 1px dashed var(--border);
+  border-radius: var(--radius);
+  color: var(--accent);
+  font-size: 0.86rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: background var(--transition), border-color var(--transition);
+  font-family: inherit;
+}
+.save-picker-new-btn:hover {
+  background: var(--accent-soft);
+  border-color: var(--accent-line);
+}
+.save-picker-new-btn svg { color: var(--accent); }
+.save-picker-new-form {
+  display: flex;
+  gap: 0.4rem;
+  padding: 0.15rem 0;
+}
+.save-picker-new-form[hidden] { display: none; }
+.save-picker-new-input {
+  flex: 1;
+  padding: 0.5rem 0.65rem;
+  font-family: inherit;
+  font-size: 0.88rem;
+  background: var(--surface-2);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  color: var(--text);
+  outline: none;
+  transition: border-color var(--transition);
+}
+.save-picker-new-input:focus { border-color: var(--accent); }
+.save-picker-new-add {
+  padding: 0.5rem 0.85rem;
+  font-family: inherit;
+  font-size: 0.85rem;
+  font-weight: 500;
+  color: #fff;
+  background: var(--accent);
+  border: 1px solid var(--accent);
+  border-radius: var(--radius);
+  cursor: pointer;
+  transition: background var(--transition);
+}
+.save-picker-new-add:hover { background: var(--accent-hover); }
+
+/* small chevron inside the Save button */
+.save-chevron {
+  margin-left: 0.05rem;
+  color: var(--text-3);
+  transition: transform 150ms ease;
+}
+.favourite-btn[aria-expanded="true"] .save-chevron {
+  transform: rotate(180deg);
+}
+.favourite-btn.is-on .save-chevron { color: var(--accent); }

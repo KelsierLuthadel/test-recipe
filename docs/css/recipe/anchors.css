@@ -1,0 +1,20 @@
+/* Per-step anchor link icon attached to h3 headings inside the Method
+   section. Hidden by default; appears on heading hover/focus. The
+   .is-copied flash signals a successful clipboard copy. */
+
+.heading-anchor {
+  display: inline-flex;
+  align-items: center;
+  margin-left: 0.5rem;
+  color: var(--text-faint);
+  opacity: 0;
+  transition: opacity var(--transition), color var(--transition);
+  text-decoration: none;
+  vertical-align: middle;
+}
+.markdown h3:hover .heading-anchor,
+.markdown h3:focus-within .heading-anchor,
+.heading-anchor:focus { opacity: 1; }
+.heading-anchor:hover { color: var(--accent); }
+.heading-anchor.is-copied { color: var(--accent); opacity: 1; }
+.markdown h3:target { background: var(--accent-soft); padding: 0.25rem 0.5rem; border-radius: var(--radius); }

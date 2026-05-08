@@ -1,0 +1,65 @@
+/* Empty / loading / error blocks. Two variants: a plain centred block
+   (used by category pages, search no-match) and a richer dashed-border
+   block with a circular icon (used by /favourites, /recent, /top-rated,
+   /notes, /cooked when those lists are empty). */
+
+.empty-state, .loading-state, .error-state {
+  text-align: center;
+  padding: 4rem 1rem;
+  color: var(--text-3);
+}
+.empty-state-title, .error-state-title {
+  font-family: var(--font-serif);
+  font-size: 1.4rem;
+  color: var(--text-2);
+  margin-bottom: 0.4rem;
+}
+
+/* richer empty state used on /favourites, /recent, /top-rated, /notes, /cooked */
+.empty-state-rich {
+  text-align: center;
+  padding: 3.5rem 1.25rem 4rem;
+  color: var(--text-3);
+  background: var(--surface);
+  border: 1px dashed var(--border);
+  border-radius: var(--radius-lg);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.75rem;
+}
+.empty-state-icon {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 72px;
+  height: 72px;
+  border-radius: 50%;
+  background: var(--accent-soft);
+  color: var(--accent);
+  margin-bottom: 0.25rem;
+}
+.empty-state-rich .empty-state-title {
+  font-family: var(--font-serif);
+  font-size: 1.4rem;
+  font-weight: 600;
+  color: var(--text);
+  margin: 0;
+}
+.empty-state-body {
+  margin: 0;
+  max-width: 44ch;
+  font-size: 0.94rem;
+  color: var(--text-2);
+  line-height: 1.55;
+}
+.error-state { color: #b91c1c; }
+.spinner {
+  display: inline-block;
+  width: 24px; height: 24px;
+  border: 2px solid var(--border);
+  border-top-color: var(--accent);
+  border-radius: 50%;
+  animation: spin 700ms linear infinite;
+}
+@keyframes spin { to { transform: rotate(360deg); } }

@@ -1,0 +1,23 @@
+/* First-paint skeleton: placeholder shimmer cards rendered while
+   recipes.json is fetching, replaced by real content on resolve. */
+
+.skeleton-shell { padding-top: 0.5rem; animation: fade-in 180ms ease; }
+.skel {
+  background: linear-gradient(90deg, var(--surface-2) 0%, var(--surface-hover) 50%, var(--surface-2) 100%);
+  background-size: 200% 100%;
+  animation: skel-shimmer 1.4s ease-in-out infinite;
+  border-radius: 4px;
+}
+@keyframes skel-shimmer {
+  0% { background-position: 200% 0; }
+  100% { background-position: -200% 0; }
+}
+.skel-h1 { height: 2.1rem; width: 50%; max-width: 360px; margin-bottom: 0.6rem; border-radius: 6px; }
+.skel-line { height: 0.85rem; width: 65%; max-width: 480px; margin-bottom: 1.5rem; }
+.skel-line.wide { width: 80%; }
+.skeleton-card { padding: 0; border: 1px solid var(--border); border-radius: var(--radius-lg); background: var(--surface); overflow: hidden; }
+.skeleton-card .card-media.skel { aspect-ratio: 4 / 3; border-radius: 0; }
+.skeleton-card .skel-title { height: 1.2rem; width: 80%; margin-bottom: 0.5rem; border-radius: 4px; }
+.skeleton-card .skel-line { height: 0.7rem; width: 95%; margin-bottom: 0.35rem; }
+.skeleton-card .skel-line.short { width: 60%; margin-bottom: 0; }
+.skeleton-card .card-body { padding: 0.85rem 1rem 1rem; }

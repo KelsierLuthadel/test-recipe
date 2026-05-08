@@ -1,0 +1,29 @@
+/* Top-level page chrome: sidebar + main column, plus the desktop "sidebar
+   collapsed" override toggled by JS. Mobile drawer behaviour lives in
+   responsive.css. */
+
+.sidebar {
+  position: fixed;
+  top: 0; left: 0; bottom: 0;
+  width: var(--sidebar-w);
+  background: var(--surface);
+  border-right: 1px solid var(--border);
+  display: flex;
+  flex-direction: column;
+  z-index: 50;
+  transition: transform 200ms ease;
+}
+.main {
+  margin-left: var(--sidebar-w);
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  transition: margin-left 200ms ease;
+}
+/* Desktop sidebar collapse toggled by JS */
+body.sidebar-collapsed .sidebar {
+  transform: translateX(calc(-1 * var(--sidebar-w)));
+}
+body.sidebar-collapsed .main {
+  margin-left: 0;
+}

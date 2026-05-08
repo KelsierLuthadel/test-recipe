@@ -1,0 +1,48 @@
+/* Full-screen cooking mode: hides chrome (sidebar / topbar / toolbar),
+   bumps text sizes, centres the content column. Toggled via
+   body.is-cooking-mode added by JS. Esc-to-exit handled in JS. */
+
+.cook-mode-exit {
+  display: none;
+  position: fixed;
+  top: 16px;
+  right: 16px;
+  z-index: 200;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.85rem 1.25rem;
+  font-family: var(--font-sans);
+  font-size: 1rem;
+  font-weight: 600;
+  color: var(--surface);
+  background: var(--text);
+  border: 1px solid var(--text);
+  border-radius: 999px;
+  cursor: pointer;
+  box-shadow: var(--shadow-md);
+  min-width: 96px;
+  min-height: 44px;
+  justify-content: center;
+}
+.cook-mode-exit svg { width: 18px; height: 18px; }
+.cook-mode-exit:hover { background: var(--text-2); border-color: var(--text-2); }
+body.is-cooking-mode .cook-mode-exit { display: inline-flex; }
+
+body.is-cooking-mode #sidebar,
+body.is-cooking-mode #sidebar-scrim,
+body.is-cooking-mode #menu-toggle,
+body.is-cooking-mode .topbar,
+body.is-cooking-mode .recipe-toolbar,
+body.is-cooking-mode .skip-link,
+body.is-cooking-mode .recipe-notes,
+body.is-cooking-mode .section-action-btn { display: none !important; }
+
+body.is-cooking-mode .main { margin-left: 0; }
+body.is-cooking-mode .content { padding-top: 3rem; max-width: 800px; margin: 0 auto; }
+body.is-cooking-mode .markdown { font-size: 1.15rem; line-height: 1.85; }
+body.is-cooking-mode .markdown h1 { font-size: 2.4rem; }
+body.is-cooking-mode .markdown h2 { font-size: 1.55rem; }
+body.is-cooking-mode .markdown li { font-size: 1.1em; padding: 0.15rem 0; }
+body.is-cooking-mode .markdown ol li { padding: 0.35rem 0; }
+body.is-cooking-mode .info-chip { font-size: 0.95rem; }
+body.is-cooking-mode .info-chip-label { font-size: 0.78rem; }

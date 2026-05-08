@@ -1,0 +1,54 @@
+/* Desktop-only floating Table of Contents shown to the right of a recipe.
+   Hidden by default; appears at viewports >= 1180px. Hidden in print. */
+
+.recipe-toc { display: none; }
+@media (min-width: 1180px) {
+  .recipe-toc {
+    display: block;
+    position: fixed;
+    top: calc(var(--topbar-h) + 1.75rem);
+    left: calc(var(--sidebar-w) + var(--recipe-max) + 4.5rem);
+    width: 200px;
+    max-height: calc(100vh - var(--topbar-h) - 3.5rem);
+    overflow-y: auto;
+    padding: 0.65rem 0;
+    z-index: 10;
+  }
+  body.sidebar-collapsed .recipe-toc { left: calc(var(--recipe-max) + 4.5rem); }
+  .toc-label {
+    font-size: 0.66rem;
+    font-weight: 600;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--text-3);
+    margin-bottom: 0.5rem;
+    padding-left: 0.85rem;
+  }
+  .toc-list {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 0.05rem;
+    border-left: 1px solid var(--border);
+  }
+  .toc-list li { margin: 0; }
+  .toc-list a {
+    display: block;
+    padding: 0.32rem 0.85rem;
+    font-size: 0.83rem;
+    color: var(--text-3);
+    text-decoration: none;
+    border-left: 2px solid transparent;
+    margin-left: -1px;
+    transition: color var(--transition), border-color var(--transition);
+  }
+  .toc-list a:hover { color: var(--text); }
+  .toc-list a.is-active {
+    color: var(--accent);
+    border-left-color: var(--accent);
+    font-weight: 500;
+  }
+}
+@media print { .recipe-toc { display: none !important; } }

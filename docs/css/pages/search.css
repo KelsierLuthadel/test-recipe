@@ -1,0 +1,14 @@
+/* Search results page meta line + the global <mark> highlight used inside
+   card titles and overviews to show matched substrings. */
+
+.search-info {
+  font-size: 0.85rem;
+  color: var(--text-3);
+  margin-bottom: 1.25rem;
+}
+mark {
+  background: var(--accent-soft);
+  color: inherit;
+  padding: 0 0.1em;
+  border-radius: 2px;
+}

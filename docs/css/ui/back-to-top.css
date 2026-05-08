@@ -1,0 +1,36 @@
+/* Floating bottom-right "scroll to top" button. Hidden until scrollY > 600,
+   nudges up when the timer panel is visible to avoid stacking. */
+
+.back-to-top {
+  position: fixed;
+  right: 16px;
+  bottom: 16px;
+  z-index: 240;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 44px;
+  height: 44px;
+  border-radius: 50%;
+  border: 1px solid var(--border);
+  background: var(--surface);
+  color: var(--text-2);
+  box-shadow: var(--shadow-md);
+  cursor: pointer;
+  opacity: 0;
+  pointer-events: none;
+  transform: translateY(8px);
+  transition: opacity 180ms ease, transform 180ms ease, color var(--transition), background var(--transition);
+}
+.back-to-top.is-visible {
+  opacity: 1;
+  pointer-events: auto;
+  transform: none;
+}
+.back-to-top:hover {
+  color: var(--accent);
+  background: var(--surface-2);
+}
+/* Avoid overlap with the timer panel when both are visible */
+.timer-panel.is-open ~ .back-to-top.is-visible { bottom: 88px; }
+@media print { .back-to-top { display: none !important; } }

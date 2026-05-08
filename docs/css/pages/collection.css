@@ -1,0 +1,95 @@
+/* Collection page: title row with the page title and a per-collection
+   manage menu (Rename / Delete) for user-created collections. The menu
+   is hidden on Favourites and other built-ins. */
+
+.collection-title-row {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  flex-wrap: wrap;
+}
+.collection-title-row .page-title { flex: 1; min-width: 0; }
+
+.collection-manage {
+  position: relative;
+  display: inline-flex;
+}
+.collection-manage-toggle {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 32px;
+  height: 32px;
+  background: transparent;
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  color: var(--text-3);
+  cursor: pointer;
+  transition: color var(--transition), border-color var(--transition), background var(--transition);
+}
+.collection-manage-toggle:hover {
+  color: var(--text);
+  border-color: var(--border-strong);
+  background: var(--surface-2);
+}
+.collection-manage-menu {
+  position: absolute;
+  top: calc(100% + 6px);
+  right: 0;
+  min-width: 160px;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  box-shadow: var(--shadow-md);
+  padding: 0.35rem;
+  z-index: 70;
+  display: flex;
+  flex-direction: column;
+  gap: 1px;
+}
+.collection-manage-menu[hidden] { display: none; }
+.collection-manage-item {
+  display: block;
+  width: 100%;
+  text-align: left;
+  padding: 0.5rem 0.7rem;
+  background: transparent;
+  border: none;
+  color: var(--text-2);
+  font-family: inherit;
+  font-size: 0.88rem;
+  border-radius: 4px;
+  cursor: pointer;
+  transition: background var(--transition), color var(--transition);
+}
+.collection-manage-item:hover {
+  background: var(--surface-2);
+  color: var(--text);
+}
+.collection-manage-item[data-action="delete"] { color: #b91c1c; }
+.collection-manage-item[data-action="delete"]:hover {
+  background: #fef2f2;
+  color: #991b1b;
+}
+[data-theme="dark"] .collection-manage-item[data-action="delete"] { color: #fca5a5; }
+[data-theme="dark"] .collection-manage-item[data-action="delete"]:hover {
+  background: #2d1414;
+  color: #fecaca;
+}
+
+/* Rename input replaces the h1 in-place; visually mirrors page-title. */
+.collection-rename-input {
+  flex: 1;
+  min-width: 0;
+  font-family: var(--font-serif);
+  font-size: 2.1rem;
+  font-weight: 500;
+  line-height: 1.15;
+  letter-spacing: -0.015em;
+  color: var(--text);
+  background: var(--surface);
+  border: 1px solid var(--accent);
+  border-radius: var(--radius);
+  padding: 0.25rem 0.5rem;
+  outline: none;
+}
