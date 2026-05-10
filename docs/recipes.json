@@ -1,10 +1,10 @@
 {
-  "repo": "KelsierLuthadel/recipes",
+  "repo": "KelsierLuthadel/test-recipe",
   "branch": "main",
-  "commit": "41b2992",
-  "version": "0.5.0",
-  "rawBase": "https://raw.githubusercontent.com/KelsierLuthadel/recipes/main/",
-  "generatedAt": "2026-05-10T18:08:44.684Z",
+  "commit": "214b1ce",
+  "version": null,
+  "rawBase": "https://raw.githubusercontent.com/KelsierLuthadel/test-recipe/main/",
+  "generatedAt": "2026-05-10T18:23:08.768Z",
   "totalRecipes": 871,
   "categories": [
     {
