@@ -46,6 +46,9 @@ export function updateMeta() {
       title = 'Discover · Recipes';
       description = 'Find a recipe by picking tags. Each pick narrows what\'s left.';
     }
+  } else if (state.route.name === 'plan') {
+    title = 'Meal plan · Recipes';
+    description = 'Plan recipes for the week and get an aggregated shopping list.';
   } else if (state.route.name === 'pantry') {
     const have = Array.isArray(state.route.have) ? state.route.have : [];
     if (have.length) {

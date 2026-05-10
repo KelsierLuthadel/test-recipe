@@ -1,0 +1,35 @@
+/* Floating back-to-ingredients button shown once the user has scrolled
+   past the Ingredients heading. Lives next to the existing back-to-top
+   button (slightly above so they don't overlap). Hidden via the [hidden]
+   attribute by the IntersectionObserver in back-to-ingredients.js. */
+
+.back-to-ingredients {
+  position: fixed;
+  right: 1.25rem;
+  bottom: 4.75rem;
+  z-index: 60;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  padding: 0.55rem 0.95rem;
+  font-family: inherit;
+  font-size: 0.82rem;
+  font-weight: 500;
+  color: #fff;
+  background: var(--accent);
+  border: 1px solid var(--accent);
+  border-radius: 999px;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.18);
+  cursor: pointer;
+  transition: transform var(--transition), background var(--transition);
+}
+.back-to-ingredients[hidden] { display: none; }
+.back-to-ingredients:hover { background: var(--accent-hover); transform: translateY(-1px); }
+.back-to-ingredients svg { flex-shrink: 0; }
+
+@media (max-width: 600px) {
+  .back-to-ingredients { right: 0.75rem; bottom: 4.25rem; padding: 0.45rem 0.75rem; font-size: 0.76rem; }
+}
+
+/* Cooking mode hides chrome; hide the floating button along with it. */
+body.cooking-mode .back-to-ingredients { display: none; }

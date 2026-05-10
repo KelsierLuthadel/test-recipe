@@ -11,14 +11,20 @@ let searchTimer = null;
 
 export function bindSearch() {
   els.searchInput.addEventListener('input', () => {
-    const q = els.searchInput.value.trim();
+    // Use the raw value (not trimmed) when building the URL so a trailing
+    // space the user just typed stays in the route. Otherwise the trim
+    // mismatches state.route.query against the input value, and
+    // syncSearchInput rubber-bands the input back, eating the space and
+    // making multi-word queries like "chilli con carne" impossible.
+    const raw = els.searchInput.value;
+    const trimmed = raw.trim();
     clearTimeout(searchTimer);
     searchTimer = setTimeout(() => {
-      if (!q) {
+      if (!trimmed) {
         if (state.route.name === 'search') navigate('#/');
         return;
       }
-      navigate(searchHash(q));
+      navigate(searchHash(raw));
     }, 120);
   });
   els.searchInput.addEventListener('keydown', (e) => {
@@ -30,6 +36,10 @@ export function bindSearch() {
 }
 
 export function syncSearchInput() {
+  // Don't yank the input from under the user while they're typing. We
+  // only need to repopulate the input on programmatic navigations
+  // (back/forward, deep link) where focus isn't on the box.
+  if (els.searchInput === document.activeElement) return;
   if (state.route.name === 'search' && state.route.query) {
     if (els.searchInput.value !== state.route.query) els.searchInput.value = state.route.query;
   }

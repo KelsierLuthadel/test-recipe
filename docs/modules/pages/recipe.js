@@ -21,7 +21,13 @@ import { insertIngredientsShareButton } from '../recipe/share.js';
 import { insertPlanAheadCallout } from '../recipe/plan-ahead.js';
 import { addStepAnchors, maybeScrollToStep } from '../recipe/anchors.js';
 import { bindIngredientStrike } from '../recipe/strike.js';
+import { addSubstitutionHints } from '../recipe/substitutions.js';
+import { markAllergens, appendAllergenFootnote } from '../recipe/allergen-marks.js';
+import { insertWinePairings } from '../recipe/wine-pairings.js';
+import { insertSidePairings } from '../recipe/side-pairings.js';
+import { insertSimilarRecipes } from '../recipe/similar.js';
 import { addMethodTimers } from '../recipe/timers.js';
+import { addBackToIngredients } from '../recipe/back-to-ingredients.js';
 import { insertPersonalNotes } from '../recipe/notes.js';
 import { insertSiblingNavigation } from '../recipe/siblings.js';
 import { buildRecipeToc } from '../recipe/toc.js';
@@ -55,6 +61,10 @@ export async function renderRecipe(slug) {
               <span class="action-label">More</span>
             </button>
             <div class="recipe-overflow-menu" role="menu" hidden>
+              <button type="button" class="overflow-item" data-action="plan" role="menuitem">
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
+                Add to meal plan
+              </button>
               <button type="button" class="overflow-item" data-action="mise" role="menuitem">
                 <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="4" width="18" height="16" rx="2"/><line x1="8" y1="9" x2="16" y2="9"/><line x1="8" y1="13" x2="14" y2="13"/><line x1="8" y1="17" x2="12" y2="17"/></svg>
                 Mise en place
@@ -93,12 +103,19 @@ export async function renderRecipe(slug) {
     insertRecipeChips(body, recipe);
     insertIngredientsShareButton(body, recipe);
     insertPlanAheadCallout(body);
+    insertWinePairings(body, recipe);
+    insertSidePairings(body, recipe);
     addStepAnchors(body);
     bindIngredientStrike(body);
+    markAllergens(body, recipe);
+    addSubstitutionHints(body);
     addMethodTimers(body);
+    appendAllergenFootnote(body, recipe);
+    insertSimilarRecipes(body, recipe);
     insertSiblingNavigation(body, recipe);
     insertPersonalNotes(body, recipe);
     buildRecipeToc(body);
+    addBackToIngredients(body);
     maybeScrollToStep();
   } catch (err) {
     const body = document.getElementById('recipe-body');

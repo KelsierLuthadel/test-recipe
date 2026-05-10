@@ -10,6 +10,7 @@ import { escapeHtml } from '../util/dom.js';
 import { cardHtml } from '../cards.js';
 import { tagFilterHtml } from '../tags.js';
 import { discoverHash } from '../routes.js';
+import { visibleRecipes } from '../allergens.js';
 
 export function renderDiscover() {
   const activeTags = Array.isArray(state.route.tags) ? state.route.tags : [];
@@ -17,11 +18,12 @@ export function renderDiscover() {
   // Candidates: recipes that have every selected tag. With no tags
   // picked yet this is the full collection, so the chip row shows
   // every tag the build script knows about.
+  const visible = visibleRecipes(state.flatRecipes);
   const candidates = activeTags.length
-    ? state.flatRecipes.filter(r =>
+    ? visible.filter(r =>
         Array.isArray(r.tags) && activeTags.every(t => r.tags.includes(t)),
       )
-    : state.flatRecipes;
+    : visible;
 
   // Chip set + counts come from the candidate pool, which is what makes
   // this faceted: tags that no candidate has are dropped automatically.
@@ -34,8 +36,11 @@ export function renderDiscover() {
     ? `${candidates.length} recipe${candidates.length === 1 ? '' : 's'}`
     : 'Find a recipe by tag';
   const sub = activeTags.length
-    ? 'Tap a chip to add another filter, or "All" to clear them.'
+    ? 'Tap a chip to add another filter, or use Clear all below.'
     : `Pick a tag to start narrowing ${candidates.length} recipes. Each pick hides chips that no longer fit.`;
+  const clearAllHtml = activeTags.length
+    ? `<div class="discover-actions"><a class="discover-clear" href="${discoverHash([])}">Clear all</a></div>`
+    : '';
 
   const cardsHtml = candidates.length
     ? `<div class="card-grid">${candidates.map(r => cardHtml(r, true)).join('')}</div>`
@@ -50,6 +55,7 @@ export function renderDiscover() {
       </header>
 
       ${filterBar}
+      ${clearAllHtml}
 
       <section class="section">
         ${cardsHtml}

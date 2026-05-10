@@ -1,0 +1,639 @@
+/* Meal plan page (#/plan): a month calendar grid with a recipe drawer
+   for drag-and-drop, plus a shopping list below. When a date is
+   selected, a detail panel sits between the calendar and the drawer
+   listing that day's meals; the shopping list narrows to that day. */
+
+/* ---- Month nav ----------------------------------------------------- */
+.plan-month-nav {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  margin: 0 0 1rem;
+  padding: 0.5rem 0.65rem;
+  background: var(--surface-2);
+  border-radius: var(--radius);
+  flex-wrap: wrap;
+}
+.plan-month-nav-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 32px;
+  height: 32px;
+  color: var(--text-2);
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  text-decoration: none;
+  transition: color var(--transition), border-color var(--transition), background var(--transition);
+}
+.plan-month-nav-btn:hover {
+  color: var(--accent);
+  border-color: var(--accent-line);
+  background: var(--accent-soft);
+}
+.plan-month-nav-label {
+  font-family: var(--font-serif);
+  font-size: 1.15rem;
+  font-weight: 600;
+  margin: 0;
+  flex: 1;
+  text-align: center;
+  letter-spacing: -0.01em;
+}
+.plan-month-nav-today {
+  font-size: 0.78rem;
+  color: var(--accent);
+  text-decoration: none;
+  border: 1px solid var(--accent-line);
+  border-radius: var(--radius);
+  padding: 0.32rem 0.7rem;
+  transition: background var(--transition);
+}
+.plan-month-nav-today:hover { background: var(--accent-soft); }
+
+.plan-clear-btn {
+  font-family: inherit;
+  font-size: 0.78rem;
+  color: var(--text-3);
+  background: transparent;
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 0.35rem 0.75rem;
+  cursor: pointer;
+  transition: color var(--transition), border-color var(--transition), background var(--transition);
+}
+.plan-clear-btn:hover { color: #b91c1c; border-color: #fecaca; background: #fef2f2; }
+[data-theme-family="dark"] .plan-clear-btn:hover { color: #fca5a5; background: #2d1414; border-color: #5b3434; }
+
+/* ---- Calendar grid ------------------------------------------------- */
+.plan-cal {
+  margin: 0 0 1.5rem;
+}
+.plan-cal-row-head {
+  display: grid;
+  grid-template-columns: repeat(7, 1fr);
+  gap: 0.4rem;
+  margin-bottom: 0.4rem;
+}
+.plan-cal-header {
+  font-size: 0.7rem;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+  font-weight: 600;
+  color: var(--text-3);
+  text-align: center;
+  padding: 0.25rem 0;
+}
+.plan-cal-grid {
+  display: grid;
+  grid-template-columns: repeat(7, 1fr);
+  grid-auto-rows: minmax(70px, 1fr);
+  gap: 0.4rem;
+}
+.plan-cal-cell {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  justify-content: flex-start;
+  padding: 0.45rem 0.5rem;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  text-decoration: none;
+  color: var(--text-2);
+  transition: border-color var(--transition), background var(--transition), transform var(--transition);
+  min-width: 0;
+  user-select: none;
+}
+.plan-cal-cell:hover {
+  border-color: var(--accent-line);
+  background: var(--accent-soft);
+  color: var(--text-1);
+}
+.plan-cal-cell.is-out-month {
+  opacity: 0.45;
+}
+.plan-cal-cell.is-today { border-color: var(--accent); }
+.plan-cal-cell.is-today .plan-cal-cell-day {
+  font-weight: 700;
+  color: var(--accent);
+}
+.plan-cal-cell.is-selected {
+  background: var(--accent);
+  border-color: var(--accent);
+  color: #fff;
+  box-shadow: var(--shadow-sm);
+}
+.plan-cal-cell.is-selected .plan-cal-cell-day,
+.plan-cal-cell.is-selected .plan-cal-cell-count { color: #fff; }
+.plan-cal-cell.is-selected .plan-cal-cell-count { background: rgba(255, 255, 255, 0.25); }
+.plan-cal-cell.is-drop-target {
+  border-color: var(--accent);
+  background: var(--accent-soft);
+  transform: scale(1.02);
+}
+.plan-cal-cell-day {
+  font-size: 0.95rem;
+  font-weight: 500;
+  color: var(--text-1);
+  font-variant-numeric: tabular-nums;
+}
+.plan-cal-cell-count {
+  position: absolute;
+  bottom: 0.4rem;
+  right: 0.4rem;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 22px;
+  height: 22px;
+  padding: 0 0.4rem;
+  font-size: 0.72rem;
+  font-weight: 600;
+  color: var(--accent);
+  background: var(--accent-soft);
+  border-radius: 999px;
+}
+
+@media (max-width: 720px) {
+  .plan-cal-grid { grid-auto-rows: minmax(56px, 1fr); gap: 0.3rem; }
+  .plan-cal-cell { padding: 0.35rem 0.4rem; }
+  .plan-cal-cell-day { font-size: 0.85rem; }
+  .plan-cal-cell-count {
+    bottom: 0.3rem;
+    right: 0.3rem;
+    min-width: 18px;
+    height: 18px;
+    font-size: 0.65rem;
+  }
+}
+
+/* ---- Day detail panel --------------------------------------------- */
+.plan-day-detail {
+  margin: 0 0 1.5rem;
+  padding: 1rem 1.1rem;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+}
+.plan-day-detail-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  flex-wrap: wrap;
+  margin-bottom: 0.75rem;
+  padding-bottom: 0.65rem;
+  border-bottom: 1px solid var(--border);
+}
+.plan-day-detail-title {
+  font-family: var(--font-serif);
+  font-size: 1.15rem;
+  font-weight: 600;
+  margin: 0;
+}
+.plan-day-detail-actions {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.55rem;
+}
+.plan-day-clear-btn {
+  font-family: inherit;
+  font-size: 0.78rem;
+  color: var(--text-3);
+  background: transparent;
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 0.35rem 0.75rem;
+  cursor: pointer;
+  transition: color var(--transition), border-color var(--transition);
+}
+.plan-day-clear-btn:hover { color: #b91c1c; border-color: #fecaca; }
+.plan-day-back {
+  font-size: 0.85rem;
+  color: var(--accent);
+  text-decoration: none;
+}
+.plan-day-back:hover { text-decoration: underline; }
+
+.plan-day-list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 0.45rem;
+  min-height: 56px;
+  border-radius: var(--radius);
+  transition: background var(--transition), box-shadow var(--transition);
+}
+.plan-day-list.is-drop-target {
+  background: var(--accent-soft);
+  box-shadow: 0 0 0 2px var(--accent);
+}
+.plan-day-empty {
+  font-size: 0.88rem;
+  color: var(--text-3);
+  font-style: italic;
+  padding: 1rem;
+  text-align: center;
+  border: 1px dashed var(--border);
+  border-radius: var(--radius);
+}
+.plan-day-item {
+  display: flex;
+  align-items: center;
+  gap: 0.55rem;
+  padding: 0.45rem 0.55rem;
+  background: var(--surface-2);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  cursor: grab;
+  transition: opacity var(--transition), border-color var(--transition), background var(--transition);
+}
+.plan-day-item:active { cursor: grabbing; }
+.plan-day-item.is-dragging { opacity: 0.4; }
+.plan-day-item.is-drop-target {
+  border-color: var(--accent);
+  background: var(--accent-soft);
+}
+.plan-day-item-img {
+  flex-shrink: 0;
+  width: 44px;
+  height: 44px;
+  object-fit: cover;
+  border-radius: 6px;
+  background: var(--surface);
+  pointer-events: none;
+}
+.plan-day-item-img.is-empty { background: var(--surface); }
+.plan-day-item-link {
+  flex: 1;
+  min-width: 0;
+  color: var(--text-1);
+  text-decoration: none;
+  font-size: 0.92rem;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.plan-day-item-link:hover { color: var(--accent); }
+
+.plan-item-handle {
+  display: inline-flex;
+  align-items: center;
+  color: var(--text-3);
+  cursor: grab;
+  flex-shrink: 0;
+}
+.plan-item-remove {
+  flex-shrink: 0;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 22px;
+  height: 22px;
+  border: none;
+  background: transparent;
+  color: var(--text-3);
+  cursor: pointer;
+  border-radius: 50%;
+  transition: color var(--transition), background var(--transition);
+}
+.plan-item-remove:hover { color: #b91c1c; background: rgba(185, 28, 28, 0.08); }
+
+/* ---- Drawer (recipe source) -------------------------------------- */
+.plan-drawer {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 0.7rem 0.85rem 0.75rem;
+  margin: 0 0 1.5rem;
+}
+.plan-drawer-head {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 0.75rem;
+  margin-bottom: 0.55rem;
+  flex-wrap: wrap;
+}
+.plan-drawer-title {
+  font-size: 0.7rem;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+  color: var(--text-3);
+  font-weight: 600;
+}
+.plan-drawer-tabs {
+  display: inline-flex;
+  gap: 0.3rem;
+}
+.plan-drawer-tab {
+  font-family: inherit;
+  font-size: 0.78rem;
+  padding: 0.3rem 0.7rem;
+  color: var(--text-2);
+  background: transparent;
+  border: 1px solid var(--border);
+  border-radius: 999px;
+  cursor: pointer;
+  transition: color var(--transition), border-color var(--transition), background var(--transition);
+}
+.plan-drawer-tab:hover { color: var(--accent); border-color: var(--accent-line); }
+.plan-drawer-tab.is-active {
+  color: var(--accent);
+  background: var(--accent-soft);
+  border-color: var(--accent);
+}
+.plan-drawer-search {
+  width: 100%;
+  font-family: inherit;
+  font-size: 0.88rem;
+  padding: 0.45rem 0.7rem;
+  color: var(--text-1);
+  background: var(--surface-2);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  margin-bottom: 0.55rem;
+}
+.plan-drawer-search:focus {
+  outline: none;
+  border-color: var(--accent);
+  box-shadow: 0 0 0 2px var(--accent-soft);
+}
+.plan-drawer-strip {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
+  gap: 0.6rem;
+  max-height: 28rem;
+  overflow-y: auto;
+  padding: 0.1rem 0.05rem;
+}
+.plan-drawer-card {
+  display: flex;
+  flex-direction: column;
+  gap: 0.4rem;
+  padding: 0;
+  border: 1px solid var(--border);
+  background: var(--surface);
+  border-radius: var(--radius);
+  overflow: hidden;
+  text-align: left;
+  cursor: grab;
+  font-family: inherit;
+  user-select: none;
+  -webkit-user-select: none;
+  transition: border-color var(--transition), transform var(--transition), box-shadow var(--transition);
+}
+.plan-drawer-card:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 2px;
+}
+.plan-drawer-card:hover {
+  border-color: var(--accent);
+  transform: translateY(-1px);
+  box-shadow: var(--shadow-sm);
+}
+.plan-drawer-card:active { cursor: grabbing; }
+.plan-drawer-card.is-dragging { opacity: 0.45; }
+.plan-drawer-card-img {
+  width: 100%;
+  aspect-ratio: 4 / 3;
+  object-fit: cover;
+  background: var(--surface-2);
+  display: block;
+  pointer-events: none;
+}
+.plan-drawer-card-img.is-empty { background: var(--surface-2); }
+.plan-drawer-card-title {
+  font-size: 0.82rem;
+  line-height: 1.3;
+  color: var(--text-1);
+  padding: 0 0.6rem 0.6rem;
+  overflow: hidden;
+  display: -webkit-box;
+  -webkit-line-clamp: 3;
+  -webkit-box-orient: vertical;
+  text-overflow: ellipsis;
+}
+.plan-drawer-empty {
+  font-size: 0.8rem;
+  color: var(--text-3);
+  font-style: italic;
+  padding: 0.4rem 0.2rem;
+}
+@media (max-width: 720px) {
+  .plan-drawer-strip { grid-template-columns: repeat(auto-fill, minmax(130px, 1fr)); }
+}
+
+/* ---- Shopping list (aside; below the calendar) ------------------- */
+.plan-aside {
+  margin-top: 0.5rem;
+}
+.plan-aside .section { margin-bottom: 1.25rem; }
+.plan-aside .section-head { margin-bottom: 0.6rem; }
+
+.plan-shopping-empty {
+  background: var(--surface);
+  border: 1px dashed var(--border);
+  border-radius: var(--radius);
+  padding: 1rem 1.25rem;
+}
+.plan-shopping-empty-title {
+  font-family: var(--font-serif);
+  font-size: 1.05rem;
+  font-weight: 600;
+  margin-bottom: 0.4rem;
+  color: var(--text-2);
+}
+.plan-shopping-empty-text {
+  font-size: 0.88rem;
+  color: var(--text-3);
+  line-height: 1.5;
+  margin: 0;
+}
+
+.plan-shopping-note { margin-bottom: 1rem; }
+.plan-shopping-aisle { margin-bottom: 1.25rem; }
+.plan-shopping-aisle-label {
+  font-family: var(--font-serif);
+  font-size: 1rem;
+  letter-spacing: 0.02em;
+  margin: 0 0 0.5rem;
+  display: flex;
+  align-items: baseline;
+  gap: 0.5rem;
+  color: var(--text-1);
+}
+.plan-shopping-aisle-count {
+  font-family: var(--font-sans);
+  font-size: 0.7rem;
+  font-weight: 600;
+  color: var(--text-3);
+  background: var(--surface-2);
+  border-radius: 999px;
+  padding: 1px 7px;
+}
+.plan-shopping-list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+  gap: 0.4rem;
+}
+.plan-shopping-item {
+  display: flex;
+  align-items: flex-start;
+  gap: 0.55rem;
+  padding: 0.45rem 0.7rem;
+  background: var(--surface-2);
+  border-radius: var(--radius);
+  transition: opacity var(--transition);
+}
+.plan-shopping-item.is-ticked { opacity: 0.45; }
+.plan-shopping-item.is-ticked .plan-shopping-name {
+  text-decoration: line-through;
+  text-decoration-thickness: 1.5px;
+}
+.plan-shopping-tick {
+  margin-top: 0.18rem;
+  width: 16px;
+  height: 16px;
+  cursor: pointer;
+  accent-color: var(--accent);
+  flex-shrink: 0;
+}
+.plan-shopping-body {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 0.15rem;
+  cursor: pointer;
+  user-select: none;
+}
+.plan-shopping-name {
+  font-size: 0.92rem;
+  color: var(--text);
+  font-weight: 500;
+}
+.plan-shopping-name::first-letter { text-transform: uppercase; }
+.plan-shopping-count {
+  font-size: 0.7rem;
+  font-weight: 600;
+  color: var(--accent);
+  background: var(--accent-soft);
+  border-radius: 999px;
+  padding: 1px 7px;
+  margin-left: 0.3rem;
+  vertical-align: 2px;
+}
+.plan-shopping-from {
+  font-size: 0.74rem;
+  color: var(--text-3);
+  font-style: italic;
+}
+.plan-shopping-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 0.6rem;
+  margin-top: 1rem;
+}
+.plan-shopping-reset-btn {
+  font-family: inherit;
+  font-size: 0.85rem;
+  color: var(--text-3);
+  background: transparent;
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 0.5rem 0.95rem;
+  cursor: pointer;
+  transition: color var(--transition), border-color var(--transition);
+}
+.plan-shopping-reset-btn:hover { color: var(--accent); border-color: var(--accent-line); }
+.plan-shopping-copy-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  padding: 0.55rem 1rem;
+  font-family: inherit;
+  font-size: 0.88rem;
+  font-weight: 500;
+  color: #fff;
+  background: var(--accent);
+  border: 1px solid var(--accent);
+  border-radius: var(--radius);
+  cursor: pointer;
+  transition: background var(--transition);
+}
+.plan-shopping-copy-btn:hover { background: var(--accent-hover); }
+
+/* ---- Recipe-page picker popup ----------------------------------- */
+.plan-picker {
+  position: absolute;
+  z-index: 80;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  box-shadow: var(--shadow-md);
+  padding: 0.75rem;
+  min-width: 280px;
+  max-width: 360px;
+}
+.plan-picker[hidden] { display: none; }
+.plan-picker-head {
+  font-size: 0.7rem;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+  color: var(--text-3);
+  margin-bottom: 0.5rem;
+  font-weight: 600;
+}
+.plan-picker-row-dates {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.3rem;
+  max-height: 14rem;
+  overflow-y: auto;
+}
+.plan-picker-chip {
+  font-family: inherit;
+  font-size: 0.78rem;
+  font-weight: 500;
+  padding: 0.32rem 0.65rem;
+  color: var(--text-2);
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 999px;
+  cursor: pointer;
+  transition: color var(--transition), border-color var(--transition), background var(--transition);
+}
+.plan-picker-chip:hover { color: var(--accent); border-color: var(--accent-line); }
+.plan-picker-chip.is-on {
+  color: var(--accent);
+  background: var(--accent-soft);
+  border-color: var(--accent);
+}
+.plan-picker-chip.is-today {
+  font-weight: 700;
+}
+.plan-picker-chip.is-today::after {
+  content: '·';
+  margin-left: 0.25rem;
+  color: var(--accent);
+}
+.plan-picker-foot {
+  margin-top: 0.55rem;
+  padding-top: 0.45rem;
+  border-top: 1px solid var(--border);
+  font-size: 0.78rem;
+}
+.plan-picker-foot a {
+  color: var(--accent);
+  text-decoration: none;
+}
+.plan-picker-foot a:hover { text-decoration: underline; }

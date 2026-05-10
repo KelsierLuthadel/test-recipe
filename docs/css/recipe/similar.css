@@ -1,0 +1,10 @@
+/* "More like this" recipe-card grid at the bottom of recipe pages.
+   Layout reuses .card-grid; this file just adds the section's own
+   spacing so it sits nicely above the prev/next sibling nav. */
+
+.similar-recipes {
+  margin-top: 2.5rem;
+  padding-top: 2rem;
+  border-top: 1px solid var(--border);
+}
+.similar-recipes .section-head { margin-bottom: 1rem; }

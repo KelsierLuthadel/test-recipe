@@ -45,6 +45,9 @@ function renderSidebar() {
     <a class="nav-item is-top ${state.route.name === 'pantry' ? 'is-active' : ''}" href="#/pantry">
       <span class="nav-label">What can I make?</span>
     </a>
+    <a class="nav-item is-top ${state.route.name === 'plan' ? 'is-active' : ''}" href="#/plan">
+      <span class="nav-label">Meal plan</span>
+    </a>
     ${html}
   `;
   els.sidebarNav.querySelectorAll('[data-toggle]').forEach(btn => {

@@ -16,6 +16,25 @@ export const KEYS = {
   sidebarCollapsed: 'recipes:sidebar-collapsed',
   // User-created collections (Favourites lives in its own legacy key above).
   collections: 'recipes:collections',
+  // Legacy single-week meal plan key (pre-Phase-3). Migrated to
+  // planWeeks on first read; the load helpers below handle the
+  // hand-off transparently.
+  plan: 'recipes:plan',
+  // Per-ISO-week meal plans (legacy; migrated into planDates on first
+  // read of the calendar plan).
+  planWeeks: 'recipes:plan-weeks',
+  // Per-ISO-date meal plans: { "2026-05-14": [slug, ...], ... }.
+  // The list is ordered (lunch first, dinner second by tradition, but
+  // free-form for the calendar UI).
+  planDates: 'recipes:plan-dates',
+  // Allergen prefs: { hide: [allergen,...], highlight: bool }.
+  allergens: 'recipes:allergens',
+  // Wine-pairing prefs: { visible: bool }.
+  wine: 'recipes:wine',
+  // Side-pairing prefs: { visible: bool }.
+  sides: 'recipes:sides',
+  // Shopping-list ticks (set of canonical ingredient names).
+  shoppingTicks: 'recipes:plan-shopping-ticks',
 };
 
 export const RECENT_LIMIT = 12;
@@ -132,6 +151,131 @@ export const collections = {
   },
   save(arr) {
     writeJSON(KEYS.collections, arr);
+  },
+};
+
+export const plan = {
+  load() {
+    const obj = readJSON(KEYS.plan, {});
+    return obj && typeof obj === 'object' ? obj : {};
+  },
+  save(obj) {
+    writeJSON(KEYS.plan, obj);
+  },
+};
+
+// Per-ISO-date meal plans. Each date holds an ordered array of recipe
+// slugs. Writes go through here; the calendar plan page is the main
+// reader. A year of full daily plans is still well under localStorage
+// limits.
+export const planDates = {
+  load() {
+    const obj = readJSON(KEYS.planDates, {});
+    return obj && typeof obj === 'object' && !Array.isArray(obj) ? obj : {};
+  },
+  save(obj) {
+    writeJSON(KEYS.planDates, obj);
+  },
+  loadDate(iso) {
+    const all = this.load();
+    return Array.isArray(all[iso]) ? all[iso] : [];
+  },
+  saveDate(iso, list) {
+    const all = this.load();
+    if (!list || !list.length) {
+      delete all[iso];
+    } else {
+      all[iso] = list;
+    }
+    this.save(all);
+  },
+};
+
+// Per-ISO-week meal plans (legacy). Reads still work for migration;
+// nothing in the live UI calls saveWeek anymore.
+export const planWeeks = {
+  load() {
+    const obj = readJSON(KEYS.planWeeks, {});
+    return obj && typeof obj === 'object' && !Array.isArray(obj) ? obj : {};
+  },
+  save(obj) {
+    writeJSON(KEYS.planWeeks, obj);
+  },
+  loadWeek(iso) {
+    const all = this.load();
+    return all[iso] && typeof all[iso] === 'object' ? all[iso] : null;
+  },
+  saveWeek(iso, weekShape) {
+    const all = this.load();
+    all[iso] = weekShape;
+    this.save(all);
+  },
+  removeWeek(iso) {
+    const all = this.load();
+    if (iso in all) {
+      delete all[iso];
+      this.save(all);
+    }
+  },
+};
+
+// Wine-pairing visibility. Defaults to true so new users see the pairings
+// the build emitted; the user can hide them from Settings.
+export const wine = {
+  load() {
+    const obj = readJSON(KEYS.wine, null);
+    if (!obj || typeof obj !== 'object') return { visible: true };
+    return { visible: obj.visible !== false };
+  },
+  save(obj) {
+    writeJSON(KEYS.wine, { visible: !!obj.visible });
+  },
+};
+
+// Shopping-list tick state. Stored as a set of canonical ingredient
+// names (the same names planned recipes' ingredientNames carry). The
+// plan page strikes through ticked items; "Reset" clears them.
+export const shoppingTicks = {
+  load() {
+    const arr = readJSON(KEYS.shoppingTicks, []);
+    return new Set(Array.isArray(arr) ? arr : []);
+  },
+  save(set) {
+    writeJSON(KEYS.shoppingTicks, [...(set || [])]);
+  },
+};
+
+// Side-pairing visibility. Same shape as wine; defaults to visible.
+export const sides = {
+  load() {
+    const obj = readJSON(KEYS.sides, null);
+    if (!obj || typeof obj !== 'object') return { visible: true };
+    return { visible: obj.visible !== false };
+  },
+  save(obj) {
+    writeJSON(KEYS.sides, { visible: !!obj.visible });
+  },
+};
+
+// Allergen prefs. `hide` is the set of allergens whose recipes should be
+// excluded from list pages; `highlight` toggles the inline mark on the
+// recipe page. Highlight defaults ON so new users see the per-recipe
+// "Contains" footnote and bolded ingredient words without opting in;
+// hide defaults empty so we never silently filter recipes by surprise.
+export const allergens = {
+  load() {
+    const obj = readJSON(KEYS.allergens, null);
+    if (!obj || typeof obj !== 'object') return { hide: [], highlight: true };
+    return {
+      hide: Array.isArray(obj.hide) ? obj.hide : [],
+      highlight: obj.highlight !== false,
+    };
+  },
+  save(obj) {
+    writeJSON(KEYS.allergens, {
+      hide: Array.isArray(obj.hide) ? obj.hide : [],
+      highlight: obj.highlight !== false,
+    });
   },
 };
 

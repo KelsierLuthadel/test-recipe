@@ -1,6 +1,8 @@
-## Chicken Chasni
+# Chicken Chasni
 
-### Overview
+![Chicken Chasni](../resources/chicken-chasni.png)
+
+## Overview
 A sweet, creamy Scottish curry with minimal spice.
 
 ---

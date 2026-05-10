@@ -52,6 +52,8 @@ export function renderBreadcrumb() {
     parts.push({ label: 'Discover' });
   } else if (state.route.name === 'pantry') {
     parts.push({ label: 'What can I make?' });
+  } else if (state.route.name === 'plan') {
+    parts.push({ label: 'Meal plan' });
   }
 
   els.breadcrumb.innerHTML = parts.map((p, i) => {

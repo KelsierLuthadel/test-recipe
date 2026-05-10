@@ -24,6 +24,6 @@
   opacity: 1;
   transform: translate(-50%, 0);
 }
-[data-theme="dark"] .toast { background: var(--surface); color: var(--text); border: 1px solid var(--border); }
+[data-theme-family="dark"] .toast { background: var(--surface); color: var(--text); border: 1px solid var(--border); }
 .timer-panel.is-open ~ .toast.is-visible { bottom: 96px; }
 @media print { .toast { display: none !important; } }

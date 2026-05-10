@@ -1,0 +1,121 @@
+{
+  "rules": [
+    {
+      "name": "Curry sides",
+      "anyTags": ["curry"],
+      "sides": [
+        "rice/pilau-rice",
+        "rice/steamed-rice",
+        "rice/coconut-rice",
+        "rice/fried-rice",
+        "cuisine/indian/Breads/naan",
+        "cuisine/indian/Breads/rotis",
+        "cuisine/indian/Breads/puris",
+        "cuisine/indian/Breads/bengali-paratha",
+        "sides/onion-bahjis",
+        "sides/chilli-red-onion-raita"
+      ]
+    },
+    {
+      "name": "Roasts and Sunday dinners",
+      "tags": ["meals"],
+      "titleAny": ["roast", "gammon", "wellington", "sunday"],
+      "sides": [
+        "sides/roast-potatoes",
+        "sides/mashed-potatoes",
+        "sides/cauliflower-cheese",
+        "sides/buttered-red-cabbage",
+        "sides/brussels-sprouts-au-gratin",
+        "sides/chanternay-carrot-parsnip",
+        "sides/pork-apricot-stuffing",
+        "sides/celariac-and-dauphinoise"
+      ]
+    },
+    {
+      "name": "Stews and braises",
+      "tags": ["meals"],
+      "titleAny": ["stew", "braise", "casserole", "bourguignon", "ragu", "ragout", "tagine", "goulash", "carne", "wat"],
+      "sides": [
+        "sides/mashed-potatoes",
+        "sides/garlic-bread",
+        "sides/buttered-red-cabbage",
+        "sides/boulangere-potato"
+      ]
+    },
+    {
+      "name": "Pasta",
+      "tags": ["meals"],
+      "titleAny": ["pasta", "lasagne", "lasagna", "spaghetti", "carbonara", "bolognese", "tagliatelle", "fettuccine"],
+      "sides": [
+        "sides/garlic-bread",
+        "sides/coleslaw"
+      ]
+    },
+    {
+      "name": "Asian and stir-fry",
+      "anyTags": ["asian"],
+      "sides": [
+        "rice/steamed-rice",
+        "rice/fried-rice",
+        "sides/spring-rolls",
+        "sides/stir-fried-ginger-broccoli",
+        "sides/stir-fried-mange-tout",
+        "sides/stir-fried-spinach",
+        "sides/spiced-chinese-leaves",
+        "sides/cucumber"
+      ]
+    },
+    {
+      "name": "Mexican",
+      "pathPrefix": "cuisine/mexican/",
+      "sides": [
+        "cuisine/mexican/spiced-rice",
+        "sides/coleslaw",
+        "sides/potatoes-with-chilli"
+      ]
+    },
+    {
+      "name": "Burgers and grills",
+      "tags": ["meals"],
+      "titleAny": ["burger", "kebab", "grill", "bbq", "skewer"],
+      "sides": [
+        "sides/coleslaw",
+        "sides/garlic-bread",
+        "sides/potatoes-with-chilli"
+      ]
+    },
+    {
+      "name": "Beef and red meat mains",
+      "tags": ["meals"],
+      "anyTags": ["beef", "lamb"],
+      "sides": [
+        "sides/mashed-potatoes",
+        "sides/roast-potatoes",
+        "sides/buttered-red-cabbage",
+        "sides/brussels-sprouts-au-gratin"
+      ]
+    },
+    {
+      "name": "Chicken mains",
+      "tags": ["meals"],
+      "anyTags": ["chicken"],
+      "sides": [
+        "sides/mashed-potatoes",
+        "sides/coleslaw",
+        "sides/roast-potatoes",
+        "sides/buttered-red-cabbage"
+      ]
+    },
+    {
+      "name": "Fish mains",
+      "tags": ["meals"],
+      "anyTags": ["fish", "salmon", "prawn"],
+      "sides": [
+        "sides/mashed-potatoes",
+        "sides/cucumber",
+        "sides/stir-fried-spinach",
+        "sides/coleslaw"
+      ]
+    }
+  ]
+}

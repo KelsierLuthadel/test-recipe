@@ -1,0 +1,67 @@
+/* "swap" button next to ingredient lines that have substitution data,
+   plus the inline panel that expands beneath the line on click. */
+
+.ingredient-subs-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.3rem;
+  margin-left: 0.5rem;
+  padding: 1px 7px 1px 6px;
+  font-family: inherit;
+  font-size: 0.7rem;
+  font-weight: 500;
+  letter-spacing: 0.03em;
+  color: var(--text-3);
+  background: transparent;
+  border: 1px solid var(--border);
+  border-radius: 999px;
+  cursor: pointer;
+  vertical-align: 1px;
+  transition: color var(--transition), border-color var(--transition), background var(--transition);
+}
+.ingredient-subs-btn:hover,
+.ingredient-subs-btn[aria-expanded="true"] {
+  color: var(--accent);
+  border-color: var(--accent-line);
+  background: var(--accent-soft);
+}
+
+.ingredient-subs-panel {
+  margin: 0.4rem 0 0.6rem;
+  padding: 0.5rem 0.7rem;
+  background: var(--surface-2);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  font-size: 0.85rem;
+  line-height: 1.5;
+}
+.ingredient-subs-panel[hidden] { display: none; }
+.ingredient-subs-group + .ingredient-subs-group { margin-top: 0.5rem; padding-top: 0.5rem; border-top: 1px dashed var(--border); }
+.ingredient-subs-key {
+  display: inline-block;
+  font-size: 0.7rem;
+  font-weight: 600;
+  letter-spacing: 0.03em;
+  text-transform: uppercase;
+  color: var(--text-3);
+  margin-bottom: 0.25rem;
+}
+.ingredient-subs-list {
+  list-style: disc;
+  margin: 0 0 0 1.1rem;
+  padding: 0;
+  color: var(--text-2);
+}
+.ingredient-subs-list li { margin-bottom: 0.15rem; }
+
+@media (max-width: 600px) {
+  /* Bigger tap target on touch devices - the inline pill is too small
+     to hit reliably with a fingertip otherwise. */
+  .ingredient-subs-btn {
+    padding: 5px 11px 5px 10px;
+    font-size: 0.78rem;
+    margin-left: 0.4rem;
+    vertical-align: 0;
+  }
+  .ingredient-subs-panel { font-size: 0.92rem; padding: 0.65rem 0.8rem; }
+}

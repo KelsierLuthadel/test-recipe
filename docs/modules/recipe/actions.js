@@ -12,6 +12,7 @@ import { openSavePicker, closeSavePicker } from './save-picker.js';
 import { enterCookingMode } from './cooking-mode.js';
 import { openMisePlace } from './mise.js';
 import { openQrCode } from './qr.js';
+import { openPlanPicker } from './plan-picker.js';
 
 // Save button + chevron. Click anywhere on the button opens the collection
 // picker dropdown. The heart fills if the recipe is in any collection
@@ -56,6 +57,7 @@ export function bindRecipeActions(recipe) {
     else if (action === 'cook-mode') enterCookingMode();
     else if (action === 'mise') openMisePlace(recipe);
     else if (action === 'qr') openQrCode(recipe);
+    else if (action === 'plan') openPlanPicker(btn, recipe);
   };
 
   els.content.querySelectorAll('.action-btn[data-action]').forEach(btn => {

@@ -71,8 +71,8 @@
   background: #fef2f2;
   color: #991b1b;
 }
-[data-theme="dark"] .collection-manage-item[data-action="delete"] { color: #fca5a5; }
-[data-theme="dark"] .collection-manage-item[data-action="delete"]:hover {
+[data-theme-family="dark"] .collection-manage-item[data-action="delete"] { color: #fca5a5; }
+[data-theme-family="dark"] .collection-manage-item[data-action="delete"]:hover {
   background: #2d1414;
   color: #fecaca;
 }

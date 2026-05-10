@@ -10,6 +10,11 @@ import { fileURLToPath } from 'node:url';
 const REPO_ROOT = fileURLToPath(new URL('..', import.meta.url));
 const OUT_PATH = join(REPO_ROOT, 'docs', 'recipes.json');
 const CATEGORIES_PATH = join(REPO_ROOT, 'categories.json');
+const SUBSTITUTIONS_PATH = join(REPO_ROOT, 'substitutions.json');
+const WINE_PAIRINGS_PATH = join(REPO_ROOT, 'wine-pairings.json');
+const WINE_PAIRING_LIMIT = 4;
+const SIDE_PAIRINGS_PATH = join(REPO_ROOT, 'side-pairings.json');
+const SIDE_PAIRING_LIMIT = 6;
 
 const SKIP_DIRS = new Set(['.git', 'docs', 'node_modules', 'scripts', 'wip', 'resources']);
 const SKIP_FILES = new Set(['README.md', 'RECIPE_TEMPLATE.md', 'LICENSE', 'new.md']);
@@ -109,8 +114,11 @@ function extractCookTime(md) {
   return m ? m[1].trim() : null;
 }
 
+// Accept the heading line in either bare form ("## Ingredients") or
+// with a suffix ("## Ingredients (For Dry Spice Mix)") so multi-variant
+// recipes still get their ingredients indexed.
 function extractIngredientText(md) {
-  const m = md.match(/^##\s+Ingredients\s*\n([\s\S]*?)(?=^##\s|$(?![\r\n]))/m);
+  const m = md.match(/^##\s+Ingredients\b[^\n]*\n([\s\S]*?)(?=^##\s|$(?![\r\n]))/m);
   if (!m) return null;
   const lines = m[1].split(/\r?\n/).filter(l => /^-\s/.test(l));
   if (!lines.length) return null;
@@ -164,7 +172,7 @@ function canonicaliseIngredient(line) {
 }
 
 function extractIngredientNames(md) {
-  const m = md.match(/^##\s+Ingredients\s*\n([\s\S]*?)(?=^##\s|$(?![\r\n]))/m);
+  const m = md.match(/^##\s+Ingredients\b[^\n]*\n([\s\S]*?)(?=^##\s|$(?![\r\n]))/m);
   if (!m) return [];
   const lines = m[1].split(/\r?\n/).filter(l => /^-\s/.test(l));
   const seen = new Set();
@@ -179,8 +187,19 @@ function extractIngredientNames(md) {
   return out;
 }
 
-const MEAT_PATTERNS = /\b(chicken|beef|pork|lamb|mutton|turkey|duck|goose|venison|rabbit|veal|bacon|sausage|sausagemeat|salami|pepperoni|pancetta|chorizo|prosciutto|nduja|ham\b|mince|fillet|steak|cutlet|chop|gammon|brisket|oxtail|liver|kidney|tripe)\b/i;
-const SEAFOOD_PATTERNS = /\b(fish|salmon|tuna|cod|trout|mackerel|haddock|plaice|sole|seabass|sea bass|bream|snapper|shrimp|prawn|lobster|crab|oyster|mussel|clam|scallop|squid|octopus|calamari|anchov|sardine|kipper|monkfish|halibut|crayfish)\b/i;
+// Notes on the patterns:
+// - `kidney` and `mince` were dropped (false positives on "kidney beans"
+//   and "mushroom mince"); real kidney/minced-meat dishes always list a
+//   primary protein elsewhere in their ingredients.
+// - Negative lookaheads exclude known plant-context phrases:
+//     "beef tomato", "oyster mushroom/sauce", "prawn cracker",
+//     "chicken of the woods" (mushroom).
+// - Negative lookbehind excludes "Glamorgan/veggie/vegetarian/vegan" before
+//   meat words so explicitly-meatless items don't get tagged.
+// - Common cuts (rib-eye, sirloin, t-bone, etc.) ensure dishes that name
+//   the cut without the protein word still register.
+const MEAT_PATTERNS = /(?<!(?:glamorgan|veggie|vegetarian|vegan)\s)(?:\b(?:chicken(?!\s+of\s+the\s+woods)|beef(?!\s+tomato)|pork|lamb|mutton|turkey|duck|goose|venison|rabbit|veal|bacon|sausages?|sausagemeat|salami|pepperoni|pancetta|chorizo|prosciutto|nduja|ham|fillet|steak|cutlet|gammon|brisket|oxtail|tripe|sirloin|tenderloin|t-?bone|ribeye|rib-eye|porterhouse|flank|chuck|short\s+rib|short-rib|skirt\s+steak|hanger|rump\s+steak|topside|silverside|pancett[ae]|guanciale)\b)/i;
+const SEAFOOD_PATTERNS = /\b(fish|salmon|tuna|cod|trout|mackerel|haddock|plaice|sole|sea\s?bass|bream|snapper|shrimps?|prawns?(?!\s+crackers?)|lobsters?|crabs?|oysters?(?!\s+(?:mushroom|sauce))|mussels?|clams?|scallops?|squid|octopus|calamari|anchov|sardines?|kippers?|monkfish|halibut|crayfish)\b/i;
 const SPICY_PATTERNS = /\b(chill?i(?:es)?|cayenne|jalape[ñn]o|sambal|harissa|sriracha|tabasco|gochujang|piri.?piri|scotch bonnet|bird'?s.?eye|habanero|chipotle|nduja|curry powder|curry paste)\b/i;
 const SPICE_LINK_PATTERN = /\/(?:spice-mixes|curry-paste|curry-powder)\//i;
 // Animal products beyond meat / seafood — used to disqualify a recipe
@@ -204,6 +223,26 @@ const NO_COOK_PATTERNS = /\b(no[- ](?:cook|bake)|raw\b)\b/i;
 const CUISINE_NON_MEAL_SEGMENT = /^(?:base|breads?|pastes?|sauces?|pickles?|sauces-pickles|side-dishes?|spices?|mixes?|spice-mixes?|stocks?)$/;
 // Top-level cuisine folders that get the 'asian' regional tag.
 const ASIAN_CUISINES = new Set(['indian', 'chinese', 'thai', 'vietnamese', 'indonesian', 'malaysian']);
+// Allergen detection patterns. Scanned against the Ingredients section
+// only (plus the title), same scope as the diet tags. Order matters when
+// the same word might trigger more than one allergen (none currently
+// overlap). Patterns are deliberately broad; a recipe gets flagged for
+// an allergen if any of its forms appear, since this drives both an
+// inline highlight and a "don't show me this recipe" toggle.
+const ALLERGEN_PATTERNS = {
+  gluten:    /\b(?:wheat|flour|bread(?:s|crumbs?)?|pasta|noodles?|spaghetti|fettuccine|tagliatelle|penne|fusilli|ravioli|tortellini|gnocchi|lasagne|lasagna|barley|bulgur|couscous|semolina|farro|rye|seitan|pastry|pita|filo|phyllo|cracker|biscuit|cake)\b/i,
+  dairy:     /\b(?:milk|buttermilk|butter|cream|cr[eè]me|yogurt|yoghurt|cheese|paneer|ghee|kefir|quark|skyr|curds?|whey|casein|lactose|feta|mozzarella|parmesan|ricotta|mascarpone|cheddar|brie|gruy[èe]re|halloumi|stilton|gorgonzola|cr[eè]me\s+fra[îi]che)\b/i,
+  eggs:      /\beggs?\b/i,
+  'tree-nuts': /\b(?:almonds?|walnuts?|pecans?|pistachios?|cashews?|hazelnuts?|macadamias?|brazil\s+nuts?|pine\s+nuts?|chestnuts?|frangipane|marzipan|nutella|praline)\b/i,
+  peanuts:   /\b(?:peanuts?|groundnuts?|peanut\s+butter|satay)\b/i,
+  soy:       /\b(?:soy|soya|soybeans?|tofu|edamame|tempeh|miso|natto|tamari)\b/i,
+  sesame:    /\b(?:sesame|tahini|gomashio|halva)\b/i,
+  fish:      /\b(?:fish(?:\s+sauce)?|salmon|tuna|cod|trout|mackerel|haddock|plaice|sole|sea[\s-]?bass|bream|snapper|anchov(?:y|ies)|sardines?|kippers?|monkfish|halibut|pollock|herring|nuoc\s+mam)\b/i,
+  shellfish: /\b(?:shrimps?|prawns?|crabs?|lobsters?|crayfish|crawfish|scallops?|mussels?|clams?|oysters?|squid|octopus|calamari|langoustines?)\b/i,
+  mustard:   /\b(?:mustards?)\b/i,
+  celery:    /\b(?:celery|celeriac)\b/i,
+  garlic:    /\bgarlic\b/i,
+};
 // Specific main-protein tags. Each pattern only fires when the protein
 // is in the ingredients block, same heuristic as MEAT_PATTERNS / SEAFOOD_PATTERNS.
 // Kept narrow on purpose: a chip that matches 1-2 recipes is just noise
@@ -211,20 +250,34 @@ const ASIAN_CUISINES = new Set(['indian', 'chinese', 'thai', 'vietnamese', 'indo
 // (bacon, sausage, chorizo) since those rarely live alongside fresh pork
 // in the same recipe and the user mostly cares "is there pig in this".
 const PROTEIN_PATTERNS = {
-  chicken: /\bchicken\b/i,
-  beef:    /\b(?:beef|brisket|oxtail|steak)\b/i,
-  pork:    /\b(?:pork|bacon|pancetta|gammon|chorizo|salami|pepperoni|sausage|sausagemeat|nduja|prosciutto|ham)\b/i,
+  chicken: /\bchicken\b(?!\s+of\s+the\s+woods)/i,
+  beef:    /\b(?:beef(?!\s+tomato)|brisket|oxtail|steak|sirloin|tenderloin|t-?bone|ribeye|rib-eye|short\s+rib|skirt\s+steak|chuck|topside|silverside)\b/i,
+  pork:    /(?<!(?:glamorgan|veggie|vegetarian|vegan)\s)\b(?:pork|bacon|pancetta|gammon|chorizo|salami|pepperoni|sausages?|sausagemeat|nduja|prosciutto|ham)\b/i,
   lamb:    /\b(?:lamb|mutton)\b/i,
   duck:    /\b(?:duck|goose)\b/i,
-  prawn:   /\b(?:prawn|shrimp)\b/i,
+  prawn:   /\b(?:prawns?(?!\s+crackers?)|shrimps?)\b/i,
   salmon:  /\bsalmon\b/i,
 };
 
+// Unicode fractions like "1½ hours" need to be normalised to a decimal
+// before the minute-parser regex can read them; without this the cook
+// time silently reads as zero and a 4-hour recipe gets the `quick` tag.
+const TIME_FRACTIONS = {
+  '½': 0.5, '⅓': 1 / 3, '⅔': 2 / 3, '¼': 0.25, '¾': 0.75,
+  '⅕': 0.2, '⅖': 0.4, '⅗': 0.6, '⅘': 0.8,
+  '⅙': 1 / 6, '⅚': 5 / 6, '⅛': 0.125, '⅜': 0.375, '⅝': 0.625, '⅞': 0.875,
+};
+const TIME_FRACTION_RE = /(\d+)?\s*([½⅓⅔¼¾⅕⅖⅗⅘⅙⅚⅛⅜⅝⅞])/g;
+
 function timeStringToMinutes(str) {
   if (!str) return 0;
+  const s = String(str).replace(TIME_FRACTION_RE, (_, intPart, frac) => {
+    const whole = intPart ? parseInt(intPart, 10) : 0;
+    return String(whole + TIME_FRACTIONS[frac]);
+  });
   let total = 0;
-  const hourMatch = str.match(/(\d+(?:\.\d+)?)\s*hour/i);
-  const minMatch = str.match(/(\d+(?:\.\d+)?)\s*min/i);
+  const hourMatch = s.match(/(\d+(?:\.\d+)?)\s*hour/i);
+  const minMatch = s.match(/(\d+(?:\.\d+)?)\s*min/i);
   if (hourMatch) total += parseFloat(hourMatch[1]) * 60;
   if (minMatch) total += parseFloat(minMatch[1]);
   return total;
@@ -233,6 +286,16 @@ function timeStringToMinutes(str) {
 function extractIngredientsBlock(md) {
   const m = md.match(/^##\s+Ingredients\s*\n([\s\S]*?)(?=^##\s|$(?![\r\n]))/m);
   return m ? m[1] : '';
+}
+
+function deriveAllergens(recipe, md) {
+  const ingredients = extractIngredientsBlock(md);
+  const hay = recipe.title + '\n' + ingredients;
+  const out = [];
+  for (const [key, pattern] of Object.entries(ALLERGEN_PATTERNS)) {
+    if (pattern.test(hay)) out.push(key);
+  }
+  return out;
 }
 
 function deriveTags(recipe, md) {
@@ -390,6 +453,135 @@ function loadCategoryOverviews() {
   }
 }
 
+function loadSubstitutions() {
+  try {
+    const raw = JSON.parse(readFileSync(SUBSTITUTIONS_PATH, 'utf8'));
+    // Normalise keys to lowercase so runtime lookup can match without
+    // re-canonicalising. Values are kept verbatim so authoring stays free.
+    const out = {};
+    for (const [key, value] of Object.entries(raw)) {
+      out[key.toLowerCase().trim()] = value;
+    }
+    return out;
+  } catch {
+    return {};
+  }
+}
+
+function loadWinePairings() {
+  try {
+    const raw = JSON.parse(readFileSync(WINE_PAIRINGS_PATH, 'utf8'));
+    return {
+      rules: Array.isArray(raw.rules) ? raw.rules : [],
+      defaults: raw.defaults && typeof raw.defaults === 'object' ? raw.defaults : {},
+    };
+  } catch {
+    return { rules: [], defaults: {} };
+  }
+}
+
+// Wine pairing matcher. Each rule must satisfy:
+//   - every entry in `tags` is on the recipe (AND)
+//   - if `anyTags` is set, at least one matches (OR)
+//   - if `titleAny` is set, at least one keyword appears in the title (OR)
+// Multiple rules can match; their wines are merged (deduped, capped). The
+// `note` from the first matching rule wins so we don't concatenate prose.
+// Pairings only emit for recipes carrying the 'meals' or 'dessert' tag;
+// when no rule matches but the tag is present, fall back to defaults.
+function deriveWinePairings(recipe, pairings) {
+  const tags = recipe.tags || [];
+  const isMeal = tags.includes('meals');
+  const isDessert = tags.includes('dessert');
+  if (!isMeal && !isDessert) return null;
+
+  const titleLower = (recipe.title || '').toLowerCase();
+  const tagSet = new Set(tags);
+  const wines = [];
+  const seen = new Set();
+  let note = null;
+
+  for (const rule of pairings.rules) {
+    if (Array.isArray(rule.tags) && !rule.tags.every(t => tagSet.has(t))) continue;
+    if (Array.isArray(rule.anyTags) && rule.anyTags.length && !rule.anyTags.some(t => tagSet.has(t))) continue;
+    if (Array.isArray(rule.titleAny) && rule.titleAny.length && !rule.titleAny.some(k => titleLower.includes(k.toLowerCase()))) continue;
+    for (const w of rule.wines || []) {
+      const key = w.toLowerCase();
+      if (seen.has(key)) continue;
+      seen.add(key);
+      wines.push(w);
+      if (wines.length >= WINE_PAIRING_LIMIT) break;
+    }
+    if (!note && rule.note) note = rule.note;
+    if (wines.length >= WINE_PAIRING_LIMIT) break;
+  }
+
+  if (!wines.length) {
+    const fallback = isDessert ? pairings.defaults.dessert : pairings.defaults.meals;
+    if (!fallback || !Array.isArray(fallback.wines) || !fallback.wines.length) return null;
+    return { wines: fallback.wines.slice(0, WINE_PAIRING_LIMIT), note: fallback.note || null };
+  }
+  return { wines, note };
+}
+
+function loadSidePairings() {
+  try {
+    const raw = JSON.parse(readFileSync(SIDE_PAIRINGS_PATH, 'utf8'));
+    return { rules: Array.isArray(raw.rules) ? raw.rules : [] };
+  } catch {
+    return { rules: [] };
+  }
+}
+
+// Side-pairing matcher. Each rule lists candidate recipe slugs to suggest
+// alongside the current dish (e.g. naan + raita next to a curry). Rule
+// matching mirrors deriveWinePairings: `tags` (AND), `anyTags` (OR),
+// `titleAny` (OR), plus `pathPrefix` so cuisine-scoped rules are easy.
+// Returns an array of slugs that exist in `validSlugs`, deduped and
+// capped at SIDE_PAIRING_LIMIT.
+//
+// Sides themselves don't get pairings: spiced rice has no business
+// suggesting roast potatoes. We detect "is this a side recipe" by path
+// (top-level sides/, rice/, cuisine/.../breads, cuisine/.../rice).
+function isSideRecipe(recipe) {
+  const p = (recipe.path || '').toLowerCase();
+  if (p.startsWith('sides/')) return true;
+  if (p.startsWith('rice/')) return true;
+  if (/\/(?:rice|breads?|sauces?|stocks?|pickles?|spices?|spice-mixes?|salsa|coulis|chutney|salads?)\//.test(p)) return true;
+  if ((recipe.tags || []).includes('sides')) return true;
+  return false;
+}
+
+function deriveSidePairings(recipe, sidePairings, validSlugs) {
+  if (!sidePairings.rules.length) return null;
+  // Sides don't get side-pairings — that produces nonsense suggestions
+  // like "spiced rice pairs with mashed potatoes".
+  if (isSideRecipe(recipe)) return null;
+  const tags = recipe.tags || [];
+  const tagSet = new Set(tags);
+  const titleLower = (recipe.title || '').toLowerCase();
+  const path = (recipe.path || '').toLowerCase();
+  const out = [];
+  const seen = new Set();
+  // Don't suggest a recipe as a side for itself.
+  seen.add(recipe.slug);
+
+  for (const rule of sidePairings.rules) {
+    if (Array.isArray(rule.tags) && !rule.tags.every(t => tagSet.has(t))) continue;
+    if (Array.isArray(rule.anyTags) && rule.anyTags.length && !rule.anyTags.some(t => tagSet.has(t))) continue;
+    if (Array.isArray(rule.titleAny) && rule.titleAny.length && !rule.titleAny.some(k => titleLower.includes(k.toLowerCase()))) continue;
+    if (rule.pathPrefix && !path.startsWith(String(rule.pathPrefix).toLowerCase())) continue;
+    for (const slug of rule.sides || []) {
+      if (seen.has(slug)) continue;
+      if (!validSlugs.has(slug)) continue;
+      seen.add(slug);
+      out.push(slug);
+      if (out.length >= SIDE_PAIRING_LIMIT) break;
+    }
+    if (out.length >= SIDE_PAIRING_LIMIT) break;
+  }
+  return out.length ? out : null;
+}
+
 function attachOverviews(node, overviews) {
   if (node.path && overviews[node.path]) node.overview = overviews[node.path];
   for (const c of node.subcategories || []) attachOverviews(c, overviews);
@@ -399,9 +591,15 @@ function main() {
   const { repo, branch, commit, version } = detectRepoBranch();
   const rawBase = `https://raw.githubusercontent.com/${repo}/${branch}/`;
   const overviews = loadCategoryOverviews();
+  const substitutions = loadSubstitutions();
+  const winePairings = loadWinePairings();
+  const sidePairings = loadSidePairings();
 
   const files = walk(REPO_ROOT);
   const root = { slug: '', path: '', label: 'All', subcategories: [], recipes: [] };
+  // Track every recipe we build so a second pass can resolve cross-recipe
+  // references (side pairings) once all slugs are known.
+  const allRecipes = [];
 
   let total = 0;
   for (const file of files) {
@@ -426,11 +624,29 @@ function main() {
       ingredientNames: extractIngredientNames(md),
     };
     recipe.tags = deriveTags(recipe, md);
+    recipe.allergens = deriveAllergens(recipe, md);
+    const wines = deriveWinePairings(recipe, winePairings);
+    if (wines) recipe.winePairings = wines;
 
     const segments = rel.split('/').slice(0, -1);
     const node = ensureNode(root, segments);
     node.recipes.push(recipe);
+    allRecipes.push(recipe);
     total++;
+  }
+
+  // Second pass: derive side pairings now that every slug is known. Any
+  // slug listed in side-pairings.json that doesn't resolve gets dropped
+  // silently (no warning spam) so authors can rename recipes without
+  // breaking the build; rules can be cleaned up later.
+  const validSlugs = new Set(allRecipes.map(r => r.slug));
+  let sidePairCount = 0;
+  for (const recipe of allRecipes) {
+    const sides = deriveSidePairings(recipe, sidePairings, validSlugs);
+    if (sides) {
+      recipe.sidePairings = sides;
+      sidePairCount++;
+    }
   }
 
   sortTree(root);
@@ -466,12 +682,48 @@ function main() {
     totalRecipes: total,
     categories: root.subcategories,
     ingredientIndex,
+    substitutions,
   };
 
   writeFileSync(OUT_PATH, JSON.stringify(manifest, null, 2) + '\n', 'utf8');
   console.log(`Wrote ${OUT_PATH}`);
   console.log(`  ${total} recipes across ${root.subcategories.length} top-level categories`);
   console.log(`  ${ingredientIndex.length} ingredient names indexed (>=3 recipes)`);
+  console.log(`  ${Object.keys(substitutions).length} substitution entries loaded`);
+  console.log(`  ${winePairings.rules.length} wine-pairing rules loaded`);
+  console.log(`  ${sidePairings.rules.length} side-pairing rules loaded; ${sidePairCount} recipes paired`);
+
+  // Keep package.json's version in lockstep with the latest git tag, but
+  // sync FORWARD only: if package.json has been manually bumped ahead of
+  // the latest tag (e.g. "I just released 0.3.7, bumping to 0.3.8 for
+  // the next dev cycle"), leave it alone. Without this, every build
+  // would reset the bump.
+  if (version) {
+    try {
+      const pkgPath = join(REPO_ROOT, 'package.json');
+      const pkg = JSON.parse(readFileSync(pkgPath, 'utf8'));
+      if (compareSemver(pkg.version || '0.0.0', version) < 0) {
+        pkg.version = version;
+        writeFileSync(pkgPath, JSON.stringify(pkg, null, 2) + '\n', 'utf8');
+        console.log(`  Synced package.json version -> ${version}`);
+      }
+    } catch (err) {
+      console.warn(`  Could not sync package.json version: ${err.message}`);
+    }
+  }
+}
+
+// Naive semver comparison (no pre-release / build metadata): -1 if a < b,
+// 0 if equal, 1 if a > b. Pads missing parts with zeros.
+function compareSemver(a, b) {
+  const pa = String(a).split('.').map(n => parseInt(n, 10) || 0);
+  const pb = String(b).split('.').map(n => parseInt(n, 10) || 0);
+  for (let i = 0; i < 3; i++) {
+    const ai = pa[i] || 0;
+    const bi = pb[i] || 0;
+    if (ai !== bi) return ai < bi ? -1 : 1;
+  }
+  return 0;
 }
 
 main();

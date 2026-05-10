@@ -44,14 +44,35 @@
   margin-bottom: 2.5rem;
 }
 
-/* tag filter row on category pages */
+/* tag filter row on category pages. The bar splits into one row per
+   group (diet, course, ingredient) with its own subtle tint so users
+   can scan by intent. Each chip carries data-group to drive the colour. */
 .tag-filters {
   display: flex;
-  flex-wrap: wrap;
-  gap: 0.4rem;
+  flex-direction: column;
+  gap: 0.6rem;
   margin: 0 0 1.75rem;
   padding-bottom: 1rem;
   border-bottom: 1px solid var(--border);
+}
+.tag-filter-group {
+  display: grid;
+  grid-template-columns: minmax(7rem, max-content) 1fr;
+  gap: 0.5rem 0.75rem;
+  align-items: start;
+}
+.tag-filter-group-label {
+  font-size: 0.7rem;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+  color: var(--text-3);
+  padding-top: 0.45rem;
+  white-space: nowrap;
+}
+.tag-filter-group-chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.4rem;
 }
 .tag-chip {
   display: inline-flex;
@@ -73,6 +94,56 @@
   background: var(--accent-soft);
   border-color: var(--accent);
 }
+
+/* Per-group tints. Each group has its own resting border + active fill.
+   Active chips override the default accent so the colour stays in family. */
+.tag-chip[data-group="diet"] {
+  border-color: rgba(58, 140, 90, 0.35);
+  color: #2f6a44;
+}
+.tag-chip[data-group="diet"]:hover { color: #2f6a44; border-color: #3a8c5a; }
+.tag-chip[data-group="diet"].is-active {
+  color: #205934;
+  background: rgba(58, 140, 90, 0.15);
+  border-color: #3a8c5a;
+}
+.tag-chip[data-group="diet"].is-active .tag-chip-count { color: #205934; }
+
+.tag-chip[data-group="course"] {
+  border-color: rgba(74, 111, 165, 0.35);
+  color: #3a5680;
+}
+.tag-chip[data-group="course"]:hover { color: #3a5680; border-color: #4a6fa5; }
+.tag-chip[data-group="course"].is-active {
+  color: #2c4366;
+  background: rgba(74, 111, 165, 0.15);
+  border-color: #4a6fa5;
+}
+.tag-chip[data-group="course"].is-active .tag-chip-count { color: #2c4366; }
+
+.tag-chip[data-group="ingredient"] {
+  border-color: rgba(155, 56, 56, 0.35);
+  color: #842828;
+}
+.tag-chip[data-group="ingredient"]:hover { color: #842828; border-color: #9b3838; }
+.tag-chip[data-group="ingredient"].is-active {
+  color: #6b1f1f;
+  background: rgba(155, 56, 56, 0.13);
+  border-color: #9b3838;
+}
+.tag-chip[data-group="ingredient"].is-active .tag-chip-count { color: #6b1f1f; }
+
+html[data-theme-family="dark"] .tag-chip[data-group="diet"]       { color: #7fc8a0; border-color: rgba(127, 200, 160, 0.35); }
+html[data-theme-family="dark"] .tag-chip[data-group="diet"].is-active { color: #b6e2c5; background: rgba(127, 200, 160, 0.18); border-color: #7fc8a0; }
+html[data-theme-family="dark"] .tag-chip[data-group="diet"].is-active .tag-chip-count { color: #b6e2c5; }
+
+html[data-theme-family="dark"] .tag-chip[data-group="course"]       { color: #91b3df; border-color: rgba(145, 179, 223, 0.35); }
+html[data-theme-family="dark"] .tag-chip[data-group="course"].is-active { color: #c8d8ec; background: rgba(145, 179, 223, 0.18); border-color: #91b3df; }
+html[data-theme-family="dark"] .tag-chip[data-group="course"].is-active .tag-chip-count { color: #c8d8ec; }
+
+html[data-theme-family="dark"] .tag-chip[data-group="ingredient"]       { color: #e08585; border-color: rgba(224, 133, 133, 0.35); }
+html[data-theme-family="dark"] .tag-chip[data-group="ingredient"].is-active { color: #f0b3b3; background: rgba(224, 133, 133, 0.18); border-color: #e08585; }
+html[data-theme-family="dark"] .tag-chip[data-group="ingredient"].is-active .tag-chip-count { color: #f0b3b3; }
 /* Non-interactive chip whose candidate count would be 0. Rendered as a
    <span> so it's not clickable; styling kills the hover affordance. */
 .tag-chip.is-disabled {
@@ -82,6 +153,11 @@
   color: var(--text-3);
 }
 .tag-chip.is-disabled:hover { color: var(--text-3); border-color: var(--border); }
+/* Discover page: small "Clear all" link beneath the filter bar when
+   one or more tags are active. Mirrors the pantry-clear treatment. */
+.discover-actions { margin: -0.5rem 0 1.5rem; display: flex; justify-content: flex-end; }
+.discover-clear { font-size: 0.78rem; color: var(--text-3); text-decoration: none; }
+.discover-clear:hover { color: var(--accent); text-decoration: underline; }
 .tag-chip-count {
   font-size: 0.68rem;
   color: var(--text-3);

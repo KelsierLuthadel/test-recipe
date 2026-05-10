@@ -1,0 +1,60 @@
+/* Wine-pairing callout: a labelled card with chips for each suggested
+   wine and an italic note. Sits in the recipe preamble on meals and
+   desserts; emitted by the build script when wine-pairings.json rules
+   match. */
+
+html.wine-pairings-hidden .wine-pairing { display: none; }
+
+.wine-pairing {
+  margin: 1rem 0 1.5rem;
+  padding: 0.85rem 1rem 0.95rem;
+  background: var(--surface-2);
+  border: 1px solid var(--border);
+  border-left: 3px solid var(--wine-accent, #7b1e3a);
+  border-radius: var(--radius);
+  font-size: 0.92rem;
+  line-height: 1.45;
+}
+
+.wine-pairing-label {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  font-size: 0.7rem;
+  font-weight: 600;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+  color: var(--text-3);
+  margin-bottom: 0.5rem;
+}
+.wine-pairing-label svg { color: var(--wine-accent, #7b1e3a); }
+
+.wine-pairing-list {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.4rem;
+  margin-bottom: 0.4rem;
+}
+
+.wine-pairing-pill {
+  display: inline-block;
+  padding: 0.18rem 0.6rem;
+  font-size: 0.85rem;
+  font-weight: 500;
+  color: var(--text-1);
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 999px;
+}
+
+.wine-pairing-note {
+  margin: 0.3rem 0 0;
+  font-style: italic;
+  font-size: 0.85rem;
+  color: var(--text-2);
+}
+
+@media (max-width: 600px) {
+  .wine-pairing { padding: 0.75rem 0.85rem 0.85rem; }
+  .wine-pairing-pill { font-size: 0.88rem; padding: 0.22rem 0.7rem; }
+}

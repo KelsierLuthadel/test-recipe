@@ -43,6 +43,9 @@
   text-transform: uppercase;
   color: var(--text-3);
   font-weight: 500;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 .recipe-sibling-title {
   font-size: 0.95rem;
@@ -53,6 +56,11 @@
 }
 
 @media (max-width: 600px) {
-  .recipe-siblings { grid-template-columns: 1fr; }
-  .recipe-sibling-empty { display: none; }
+  /* Keep prev + next side by side on the same row; hide the recipe
+     title and the "in <Category>" suffix so just the arrow + label
+     ("Previous" / "Next") fits in a phone-width gutter. */
+  .recipe-siblings { gap: 0.5rem; }
+  .recipe-sibling { padding: 0.55rem 0.7rem; }
+  .recipe-sibling-cat { display: none; }
+  .recipe-sibling-title { display: none; }
 }

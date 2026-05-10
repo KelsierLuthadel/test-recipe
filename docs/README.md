@@ -26,11 +26,29 @@ Click the search box in the sidebar or hit `Cmd`/`Ctrl + K` to focus it. Searche
 
 Two ways to browse by tag, both faceted (the chip set narrows as you pick).
 
-**Discover** (`#/discover`, sidebar link below "All Recipes") starts from every recipe and offers every tag. Picking a tag drops chips that no longer co-occur, so you naturally drill from a broad facet (e.g. `Meals`) into narrower ones (`Asian`, then `Chicken`, then `Curry`). Tags that would yield no recipes never show. The URL captures every selection: `#/discover?tag=meals,asian,chicken` is a bookmarkable, shareable link to that filter.
+**Discover** (`#/discover`, sidebar link below "All Recipes") starts from every recipe and offers every tag. Picking a tag drops chips that no longer co-occur, so you naturally drill from a broad facet (e.g. `Meals`) into narrower ones (`Asian`, then `Chicken`, then `Curry`). Tags that would yield no recipes never show. The URL captures every selection: `#/discover?tag=meals,asian,chicken` is a bookmarkable, shareable link to that filter. A small "Clear all" link appears beneath the chip row when one or more tags are active.
 
 **Section-page chips** behave the same on category pages, but with a difference: chips that would yield 0 results stay visible greyed out (instead of disappearing), so you can see what the section *could* offer. Counts on every chip update to "if I added this, how many recipes would remain". Click the **All** chip to clear filters.
 
 The pills painted over recipe cards (Vegetarian / Quick / Spicy) are at-a-glance signals only; full filtering happens through the chip rows.
+
+### Pantry: "What can I make?"
+
+`#/pantry` (sidebar link "What can I make?") is a faceted ingredient picker. Pick the ingredients you have on hand and recipes appear ranked into tiers:
+
+- **"Uses all 3 of your ingredients"** — perfect matches, accent-coloured.
+- **"Uses 2 of 3"** — partial matches, dimmed.
+- **"Uses 1 of 3"** — single matches, dimmest.
+
+Each card shows the recipe coverage percentage (`8/10 of recipe`) plus what's still missing (`Needs: cumin, coriander, +2 more`). Native `<datalist>` autocomplete over a global ingredient index (≈ 470 entries appearing in 3+ recipes); a row of common-ingredient quick-pick chips below the input. The URL captures your selection (`#/pantry?have=onion,garlic,chicken`) so you can bookmark a pantry.
+
+Match is precision-tuned: picking `chicken` doesn't match recipes that just call for chicken stock; picking `tomato` finds recipes listing `tomatoes` (soft plural).
+
+### Meal plan
+
+`#/plan` (sidebar link "Meal plan") is a 7-day grid (Mon to Sun). Add recipes from any recipe page via **More → Add to meal plan**, which opens a small day-picker popup; tap any of the seven day chips to add or remove the current recipe. The plan page shows what's planned per day plus an aggregated **shopping list** below, grouped by canonical ingredient with attribution back to source recipes (`Onion x3 — Lamb madras, Vindaloo, Bangers and mash`). "Copy as text" copies the full list to the clipboard. "Clear week" wipes the lot.
+
+Persists to `localStorage`; bookmarks survive a refresh.
 
 ### Recipe pages
 
@@ -49,9 +67,13 @@ The action toolbar above the body has:
 In the body itself:
 
 - **Tap an ingredient line** to strike it through (state lives only on the page; refresh resets it).
+- **Substitution hints** ("swap" pill on each ingredient line that has alternatives in [substitutions.json](../substitutions.json)) — tap to expand suggested swaps (`double cream` → coconut cream, evaporated milk + butter, crème fraîche). Only one panel is open at a time.
+- **Plan-ahead callout** appears above the Method heading when any step mentions advance prep ("overnight", "day before", "make ahead"). Saves you reading the whole method to spot the time-sensitive bits.
 - **Method step headings** (`### 1. Sweat the onions`) get a clickable anchor link; copy the URL to deep-link a friend straight to that step.
 - **Time phrases inside method steps** (e.g. "Simmer for 20 minutes") become inline timer chips. Click to start; the floating panel shows running timers, beeps and vibrates on completion, and survives navigating around recipes.
-- **Notes** is a textarea at the bottom for your own scribbles. Saves debounced to `localStorage`; recipes with notes appear in the home **Notes** section.
+- **Sibling navigation** above the notes section: Previous / Next cards link to the recipes either side of the current one in the same category. `[` and `]` are keyboard shortcuts. On mobile both stay on a single row.
+- **Notes** is a click-to-edit field at the bottom: rendered as markdown when not focused (lists, links, code, blockquotes all work), textarea when you click in. Saves debounced to `localStorage`; recipes with notes appear in the home **Notes** section.
+- **Back-to-ingredients button** (floating accent pill, lower-right) appears once you've scrolled past the Ingredients heading on a long recipe. Smooth-scrolls back. Hides automatically in cooking mode.
 - **Table of contents** (desktop only, ≥ 1180 px) sticks to the right and tracks the current section as you scroll.
 
 ### Collections
@@ -89,6 +111,8 @@ Every meaningful state in the app is encoded in the URL hash, so any page can be
 | `#/c/<path>` | A category |
 | `#/c/<path>?tag=meals,asian` | A category pre-filtered by tags |
 | `#/discover?tag=meals,asian,chicken` | The Discover picker pre-narrowed |
+| `#/pantry?have=onion,garlic,chicken` | The pantry picker with ingredients pre-filled |
+| `#/plan` | The week's meal plan + shopping list |
 | `#/s?q=lamb%20curry` | A search query |
 | `#/saved/<id>` | A custom collection |
 | `#/favourites` | Built-in favourites |
@@ -101,7 +125,8 @@ Every meaningful state in the app is encoded in the URL hash, so any page can be
 
 - **Theme** (light / dark / follow system) and **Larger text** mode.
 - **Home sections** toggles for the five auto-populated views on the home page.
-- **Clear all data** wipes everything stored in `localStorage` (favourites, collections, ratings, notes, recently viewed, cooked log, settings).
+- **About** — links to the deployed release on GitHub plus a generic "what's new" link to the releases page. Version stamp also shown in the sidebar footer.
+- **Clear all data** wipes everything stored in `localStorage` (favourites, collections, ratings, notes, plan, recently viewed, cooked log, settings).
 
 Light/dark and text-size apply pre-paint via an inline script, so the page never flashes the wrong theme on load.
 
@@ -120,21 +145,29 @@ No runtime npm dependencies. The browser loads everything directly.
 From the repository root:
 
 ```sh
-# rebuild the manifest after adding or editing recipes
-npm run build
-
-# serve the site (Python)
-cd docs && python -m http.server 8000
-
-# or serve it (Node, no install)
-cd docs && npx --yes http-server -p 8000 -c-1
+npm run dev           # serve docs/ on http://localhost:8000 with caching disabled
+npm run build         # rebuild docs/recipes.json after adding or editing recipes
+npm run doctor        # lint every recipe (missing title / image / Method etc.)
+npm test              # run the node:test suite
 ```
 
 Open http://localhost:8000. Avoid opening `index.html` via `file://`: ES module imports and the `fetch('recipes.json')` call both require a real HTTP origin.
 
 The async Clipboard API requires a secure context for the rich-text path. `localhost` and `https://` qualify; `http://<lan-ip>` falls back to a hidden-textarea + `document.execCommand('copy')` legacy path automatically.
 
-Cache-bust the JS in development by bumping the `?v=` query in [index.html](index.html), or use `http-server -c-1` to disable caching entirely.
+Cache-bust the JS in development by bumping the `?v=` query in [index.html](index.html), or rely on `npm run dev` (uses `http-server -c-1` so caching is disabled).
+
+## Tooling scripts
+
+Beyond the four `npm run` aliases, the repo ships several utility scripts under [../scripts/](../scripts/):
+
+- **`build-manifest.mjs`** — walks every recipe markdown, generates [recipes.json](recipes.json), syncs `package.json.version` forward to the latest git tag.
+- **`recipe-doctor.mjs`** — reports missing title / image / Method / Overview / Serves / Prep / Cook. CI-friendly exit code; flags `--errors-only`, `--path <substr>`, `--quiet`.
+- **`audit-images.mjs`** — lists every recipe image sorted by smallest dimensions first, with parsed JPEG/PNG/WebP headers. Filters: `--max-width N`, `--max-kb N`, `--limit N`.
+- **`refresh-image.mjs`** — single + bulk-mode image swap from Pexels. Backs up existing image to a sibling `old/` folder. Needs `PEXELS_API_KEY`.
+- **`fetch-candidates.mjs`** — for recipes whose hero image is below a width threshold, stages 3 Pexels candidates per recipe under `resources/candidates/<stem>/` for manual review.
+- **`candidates-html.mjs`** — generates a single-page HTML viewer of every staged candidate alongside the current image, for visual side-by-side picking.
+- **`fetch-missing-images.mjs`** — first-pass: inserts an `![Title](resources/<stem>.jpg)` link into every markdown that lacks one. Second pass: bulk-fetches a Pexels image for every link whose file isn't on disk. Idempotent; safe to re-run.
 
 ## Folder Tree
 
@@ -146,7 +179,6 @@ docs/
 ├── styles.css                     thin entrypoint: only @import lines for everything in css/
 ├── recipes.json                   pre-built manifest, generated by scripts/build-manifest.mjs
 ├── CNAME                          GitHub Pages custom domain configuration
-├── IMAGE_CREDITS.md               attributions for recipe images sourced from Unsplash
 │
 ├── vendor/                        third-party assets (no npm dependencies at runtime)
 │   ├── fonts.css                  @font-face declarations for Source Serif 4 + Inter
@@ -179,7 +211,10 @@ docs/
 │   │
 │   ├── pages/
 │   │   ├── search.css             search results meta line + global <mark>
-│   │   └── settings.css           settings rows + toggles + clear-data button
+│   │   ├── settings.css           settings rows + toggles + clear-data button
+│   │   ├── collection.css         collection-page title row + manage menu
+│   │   ├── pantry.css             pantry picker chips + tier sections + result cards
+│   │   └── plan.css               meal-plan day grid + shopping list + day-picker popup
 │   │
 │   └── recipe/
 │       ├── detail.css             detail layout, action toolbar, action buttons, hero
@@ -187,17 +222,22 @@ docs/
 │       ├── markdown.css           markdown h1/h2/h3/p/ul/table/code/section-action-btn
 │       ├── toc.css                desktop TOC (>= 1180px)
 │       ├── actions.css            More-overflow menu + Cooked button on-state
+│       ├── save-picker.css        save-button dropdown (Favourites + custom collections)
 │       ├── ingredients.css        tap-to-strike on ingredient lines
 │       ├── timers.css             inline timer pills + floating timer panel
 │       ├── anchors.css            Method-step h3 anchor link + :target highlight
-│       ├── notes.css              personal notes textarea + status line
+│       ├── notes.css              personal notes (markdown preview + textarea editor)
+│       ├── siblings.css           previous / next recipe cards above notes
+│       ├── plan-ahead.css         "Plan ahead" callout above the Method heading
+│       ├── substitutions.css      ingredient swap pill + inline panel
+│       ├── back-to-ingredients.css   floating back-to-ingredients button
 │       └── cooking-mode.css       full-screen cooking mode (chrome hidden, text bumped)
 │
 └── modules/
     ├── state.js                   singleton state object, els (DOM refs), favourite/cooked/rating mutators, setContent
     ├── storage.js                 localStorage I/O for every persisted key under the recipes: namespace
     ├── manifest.js                loadManifest, indexManifest, categoryNode, ancestors, rawUrl, flattenRecipes
-    ├── routes.js                  parseRoute (hash -> route object), navigate, categoryHash/recipeHash/searchHash/collectionHash/discoverHash
+    ├── routes.js                  parseRoute (hash -> route object), navigate, categoryHash/recipeHash/searchHash/collectionHash/discoverHash/pantryHash
     ├── theme.js                   light/dark theme, larger-text mode, sidebar collapse: init/bind/setters
     ├── meta.js                    per-route document.title + OG/Twitter/description meta tags
     ├── cards.js                   recipe cards + category tiles + featured pickers + private search-highlight helpers
@@ -223,13 +263,16 @@ docs/
     │   └── mobile.js              hamburger drawer toggle + scrim + close handler
     │
     ├── collections.js             saved collections (Favourites + custom): list/find/add/remove/rename
+    ├── plan.js                    weekly meal plan storage helpers + day labels + plan:changed event
     │
     ├── pages/                     one module per top-level route
     │   ├── home.js                home page: enabled section bar + category grid + 8 featured cards
     │   ├── discover.js            faceted tag picker (#/discover); chips narrow as tags are picked
+    │   ├── pantry.js              "What can I make?" picker (#/pantry); tiered results + shopping coverage
+    │   ├── plan.js                meal-plan grid + aggregated shopping list (#/plan)
     │   ├── lists.js               recent / top-rated / notes / cooked auto-populated views
     │   ├── collection.js          single-collection page (Favourites + user collections); rename / delete
-    │   ├── settings.js            appearance toggles + section toggles + clear-all-data
+    │   ├── settings.js            appearance toggles + section toggles + about + clear-all-data
     │   ├── category.js            category page: back, header, faceted tag filter, sub-tiles, featured, recipes
     │   ├── search.js              search results page + searchRecipes ranking
     │   ├── recipe.js              recipe page orchestrator: toolbar shell + body + enhancement passes
@@ -242,13 +285,18 @@ docs/
         ├── scaling.js             servings scaler + parseQuantity (used by timers too) + line rescaler
         ├── strike.js              tap-to-strike on ingredient lines
         ├── timers.js              method-step timer detection, panel, wake-lock, chime
-        ├── notes.js               personal notes textarea with debounced autosave
+        ├── notes.js               click-to-edit notes (markdown preview + textarea), debounced autosave
+        ├── plan-ahead.js          "Plan ahead" callout above Method (auto-extracts overnight / day-before cues)
+        ├── substitutions.js       inline "swap" pill + panel from substitutions.json
+        ├── siblings.js            previous / next recipe cards + [ / ] keyboard nav
+        ├── back-to-ingredients.js   floating back-to-ingredients button (IntersectionObserver)
         ├── anchors.js             Method h3 step anchors + maybeScrollToStep on ?step=
         ├── toc.js                 desktop sticky table of contents (>= 1180px)
         ├── mise.js                "mise en place" modal (chopped/diced/etc. checklist)
         ├── qr.js                  QR code modal (lazy-loads vendor/qrcode.min.js)
         ├── share.js               Shopping list button on Ingredients heading (clipboard + share sheet)
         ├── save-picker.js         Save-button dropdown: tick collections to add/remove + "+ New collection"
+        ├── plan-picker.js         More-menu popup: tap day chips to toggle a recipe in/out of the meal plan
         ├── cooking-mode.js        full-screen cooking mode with screen wake-lock and Esc-to-exit
         └── actions.js             toolbar buttons + handlers (save/cooked/cook/copy/print/share + overflow)
 ```

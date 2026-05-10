@@ -1,0 +1,59 @@
+/* Inline allergen markers inside the recipe Ingredients section, plus
+   the footnote listing this recipe's allergens. Both are always written
+   to the DOM; visibility is gated by .allergens-highlighted on <html>
+   so toggling the setting is a pure CSS flip with no re-render. */
+
+.allergen-mark {
+  background: transparent;
+  color: inherit;
+  font-weight: inherit;
+  text-decoration: none;
+  padding: 0;
+}
+
+html.allergens-highlighted .allergen-mark {
+  font-weight: 500;
+  color: var(--allergen-mark-color, #b8431f);
+  background: transparent;
+}
+
+html[data-theme-family="dark"].allergens-highlighted .allergen-mark {
+  color: var(--allergen-mark-color, #f0a37e);
+}
+
+.allergen-footnote { display: none; }
+html.allergens-highlighted .allergen-footnote {
+  display: block;
+  margin: 1.5rem 0;
+  padding: 0.85rem 1rem;
+  border: 1px solid var(--border);
+  border-left: 3px solid var(--accent, #e76f51);
+  border-radius: var(--radius);
+  background: var(--surface-2);
+  font-size: 0.9rem;
+  line-height: 1.5;
+  color: var(--text-2);
+}
+.allergen-footnote-label {
+  display: block;
+  font-size: 0.7rem;
+  font-weight: 600;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+  color: var(--text-3);
+  margin-bottom: 0.3rem;
+}
+.allergen-footnote-list {
+  display: inline;
+  margin: 0;
+  padding: 0;
+}
+.allergen-footnote-item {
+  font-weight: 700;
+  color: var(--text-1);
+}
+.allergen-footnote-item + .allergen-footnote-item::before {
+  content: ', ';
+  font-weight: 400;
+  color: var(--text-2);
+}

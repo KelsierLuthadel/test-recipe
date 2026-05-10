@@ -11,6 +11,7 @@ import { state, setContent, els } from '../state.js';
 import { escapeHtml, escapeAttr } from '../util/dom.js';
 import { cardHtml } from '../cards.js';
 import { navigate, pantryHash } from '../routes.js';
+import { visibleRecipes } from '../allergens.js';
 
 const QUICK_PICK_LIMIT = 24;
 
@@ -24,7 +25,7 @@ export function renderPantry() {
   const indexEntries = state.manifest.ingredientIndex || [];
 
   const scored = haveLower.length
-    ? state.flatRecipes
+    ? visibleRecipes(state.flatRecipes)
         .filter(r => Array.isArray(r.ingredientNames) && r.ingredientNames.length)
         .map(r => scoreRecipe(r, haveLower))
         .filter(s => s.hits > 0)
@@ -149,26 +150,51 @@ function renderResults(scored, haveLower) {
     return `<div class="empty-state"><div class="empty-state-title">No matches</div><p>None of the recipes use any of these ingredients. Try removing one or picking something more common.</p></div>`;
   }
 
-  const items = scored.slice(0, 60).map(s => {
-    const card = cardHtml(s.recipe, true);
-    const pct = Math.round((s.hits / s.total) * 100);
-    const missingLine = s.missing.length
-      ? `<span class="pantry-result-missing">Needs: ${escapeHtml(s.missing.slice(0, 6).join(', '))}${s.missing.length > 6 ? `, +${s.missing.length - 6} more` : ''}</span>`
-      : `<span class="pantry-result-missing pantry-result-complete">All ingredients in your pantry</span>`;
-    const meta = `
-      <div class="pantry-result-meta">
-        <span class="pantry-result-score">${s.hits} of ${haveLower.length} used &middot; ${s.hits}/${s.total} of recipe (${pct}%)</span>
-        ${missingLine}
-      </div>
-    `;
-    return `<div class="pantry-result">${card}${meta}</div>`;
+  // Group by hit count so partial matches are visually separated from
+  // full matches. With only 1 ingredient picked everything's a "full"
+  // match (single section); with N picked we get a section per tier.
+  const tiers = new Map();
+  for (const s of scored) {
+    if (!tiers.has(s.hits)) tiers.set(s.hits, []);
+    tiers.get(s.hits).push(s);
+  }
+  // Within a tier, recipes with higher coverage (hits / recipe-total)
+  // come first - those are the easiest to actually cook.
+  for (const list of tiers.values()) list.sort((a, b) => (b.hits / b.total) - (a.hits / a.total));
+
+  const total = haveLower.length;
+  const tierKeys = [...tiers.keys()].sort((a, b) => b - a);
+  const sections = tierKeys.map(hits => {
+    const list = tiers.get(hits);
+    const heading = total === 1
+      ? `<h2 class="section-title">${list.length} recipe${list.length === 1 ? '' : 's'}</h2>`
+      : hits === total
+        ? `<h2 class="section-title pantry-tier-full">Uses all ${total} of your ingredients <span class="pantry-tier-count">${list.length}</span></h2>`
+        : `<h2 class="section-title pantry-tier-partial">Uses ${hits} of your ${total} ingredients <span class="pantry-tier-count">${list.length}</span></h2>`;
+
+    const cards = list.slice(0, 60).map(s => {
+      const card = cardHtml(s.recipe, true);
+      const pct = Math.round((s.hits / s.total) * 100);
+      const missingLine = s.missing.length
+        ? `<span class="pantry-result-missing">Needs: ${escapeHtml(s.missing.slice(0, 6).join(', '))}${s.missing.length > 6 ? `, +${s.missing.length - 6} more` : ''}</span>`
+        : `<span class="pantry-result-missing pantry-result-complete">All ingredients in your pantry</span>`;
+      const meta = `
+        <div class="pantry-result-meta">
+          <span class="pantry-result-score">${s.hits}/${s.total} of recipe (${pct}%)</span>
+          ${missingLine}
+        </div>
+      `;
+      return `<div class="pantry-result">${card}${meta}</div>`;
+    }).join('');
+
+    const overflow = list.length > 60
+      ? `<p class="pantry-overflow">Showing top 60 of ${list.length} in this tier.</p>`
+      : '';
+
+    return `<section class="section pantry-tier"><div class="section-head">${heading}</div><div class="card-grid">${cards}</div>${overflow}</section>`;
   }).join('');
 
-  const overflow = scored.length > 60
-    ? `<p class="pantry-overflow">Showing top 60 of ${scored.length} matches. Add another ingredient to narrow down.</p>`
-    : '';
-
-  return `<section class="section"><div class="card-grid">${items}</div>${overflow}</section>`;
+  return sections;
 }
 
 function bindPantrySearch(have) {

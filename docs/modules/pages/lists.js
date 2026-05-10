@@ -7,6 +7,7 @@
 import { state, setContent } from '../state.js';
 import * as storage from '../storage.js';
 import { cardHtml } from '../cards.js';
+import { visibleRecipes } from '../allergens.js';
 import {
   emptyStateHtml,
   ICON_CLOCK,
@@ -19,9 +20,9 @@ const BACK_ARROW = `<svg width="14" height="14" viewBox="0 0 24 24" fill="none" 
 const BACK_BTN = `<div class="page-back"><a class="back-button" href="#/">${BACK_ARROW}Back to Home</a></div>`;
 
 export function renderRecent() {
-  const recipes = state.recent
+  const recipes = visibleRecipes(state.recent
     .map(slug => state.recipeBySlug.get(slug))
-    .filter(Boolean);
+    .filter(Boolean));
 
   if (!recipes.length) {
     setContent(`
@@ -55,11 +56,11 @@ export function renderRecent() {
 
 export function renderTopRated() {
   const ratingsMap = state.ratings || {};
-  const recipes = Object.entries(ratingsMap)
+  const recipes = visibleRecipes(Object.entries(ratingsMap)
     .filter(([, v]) => v >= 4)
     .sort((a, b) => b[1] - a[1])
     .map(([slug]) => state.recipeBySlug.get(slug))
-    .filter(Boolean);
+    .filter(Boolean));
 
   if (!recipes.length) {
     setContent(`
@@ -92,9 +93,9 @@ export function renderTopRated() {
 }
 
 export function renderNotesAdded() {
-  const recipes = [...state.notesSlugs]
+  const recipes = visibleRecipes([...state.notesSlugs]
     .map(slug => state.recipeBySlug.get(slug))
-    .filter(Boolean);
+    .filter(Boolean));
 
   if (!recipes.length) {
     setContent(`<div class="fade-in">${BACK_BTN}
@@ -112,14 +113,14 @@ export function renderNotesAdded() {
 
 export function renderCookedList() {
   const map = storage.cooked.load();
-  const recipes = Object.entries(map)
+  const recipes = visibleRecipes(Object.entries(map)
     .sort((a, b) => {
       const da = a[1] && a[1].last ? Date.parse(a[1].last) : 0;
       const db = b[1] && b[1].last ? Date.parse(b[1].last) : 0;
       return db - da;
     })
     .map(([slug]) => state.recipeBySlug.get(slug))
-    .filter(Boolean);
+    .filter(Boolean));
 
   if (!recipes.length) {
     setContent(`<div class="fade-in">${BACK_BTN}

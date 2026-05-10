@@ -1,6 +1,6 @@
 # Chocolate sauce
 
-![Chocolate sauce ](resources/chocolate-sauce.png)
+![Chocolate sauce ](resources/chocolate-sauce.jpg)
 
 *Often used as a topping for various desserts, this sauce can also be used as a base for rich desserts to sit on. Sometimes a pinch of salt, when added to the chocolate can enrich its flavour and enhance the senses.*
 

@@ -18,17 +18,45 @@
 <meta name="twitter:description" content="An open-source collection of recipes from around the world.">
 <meta name="twitter:image" content="">
 <link rel="stylesheet" href="vendor/fonts.css?v=4">
-<link rel="stylesheet" href="styles.css?v=44">
+<link rel="stylesheet" href="styles.css?v=71">
 <script>
   (function () {
     try {
+      var KNOWN = ['linen','mint','blush','cast-iron','midnight','plum'];
       var stored = localStorage.getItem('recipes:theme');
-      var theme = stored === 'light' || stored === 'dark'
-        ? stored
-        : (window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light');
+      // Migrate the legacy 'light'/'dark' values to the new named themes.
+      if (stored === 'light') stored = 'linen';
+      else if (stored === 'dark') stored = 'cast-iron';
+      var theme;
+      if (stored && KNOWN.indexOf(stored) !== -1) {
+        theme = stored;
+      } else if (window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches) {
+        theme = 'cast-iron';
+      } else {
+        theme = 'linen';
+      }
+      var DARK_THEMES = ['cast-iron', 'midnight', 'plum', 'dark'];
       document.documentElement.setAttribute('data-theme', theme);
+      document.documentElement.setAttribute('data-theme-family', DARK_THEMES.indexOf(theme) !== -1 ? 'dark' : 'light');
       var size = localStorage.getItem('recipes:text-size');
       if (size === 'large') document.documentElement.setAttribute('data-text-size', 'large');
+      var allergensRaw = localStorage.getItem('recipes:allergens');
+      var highlightOn = true;
+      if (allergensRaw) {
+        var parsed = JSON.parse(allergensRaw);
+        if (parsed && parsed.highlight === false) highlightOn = false;
+      }
+      if (highlightOn) document.documentElement.classList.add('allergens-highlighted');
+      var wineRaw = localStorage.getItem('recipes:wine');
+      if (wineRaw) {
+        var wineP = JSON.parse(wineRaw);
+        if (wineP && wineP.visible === false) document.documentElement.classList.add('wine-pairings-hidden');
+      }
+      var sidesRaw = localStorage.getItem('recipes:sides');
+      if (sidesRaw) {
+        var sidesP = JSON.parse(sidesRaw);
+        if (sidesP && sidesP.visible === false) document.documentElement.classList.add('side-pairings-hidden');
+      }
     } catch (e) {}
   })();
 </script>
@@ -115,6 +143,6 @@
 </template>
 
 <script src="vendor/marked.min.js?v=4" defer></script>
-<script type="module" src="app.js?v=91"></script>
+<script type="module" src="app.js?v=117"></script>
 </body>
 </html>

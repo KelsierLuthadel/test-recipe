@@ -23,6 +23,7 @@ import { bindMobileNav, closeMobileNav } from './modules/nav/mobile.js';
 import { renderHome } from './modules/pages/home.js';
 import { renderDiscover } from './modules/pages/discover.js';
 import { renderPantry } from './modules/pages/pantry.js';
+import { renderPlan } from './modules/pages/plan.js';
 import {
   renderRecent,
   renderTopRated,
@@ -35,6 +36,9 @@ import { renderSearch } from './modules/pages/search.js';
 import { renderRecipe } from './modules/pages/recipe.js';
 import { renderCollection } from './modules/pages/collection.js';
 import { FAVOURITES_ID } from './modules/collections.js';
+import { applyHighlightClass } from './modules/allergens.js';
+import { applyWineVisibilityClass } from './modules/recipe/wine-pairings.js';
+import { applySidesVisibilityClass } from './modules/recipe/side-pairings.js';
 
 function route() {
   state.route = parseRoute();
@@ -47,6 +51,7 @@ function route() {
   if (state.route.name === 'home') return renderHome();
   if (state.route.name === 'discover') return renderDiscover();
   if (state.route.name === 'pantry') return renderPantry();
+  if (state.route.name === 'plan') return renderPlan();
   if (state.route.name === 'favourites') return renderCollection(FAVOURITES_ID);
   if (state.route.name === 'collection') return renderCollection(state.route.id);
   if (state.route.name === 'recent') return renderRecent();
@@ -61,6 +66,9 @@ function route() {
 
 async function init() {
   initTheme();
+  applyHighlightClass();
+  applyWineVisibilityClass();
+  applySidesVisibilityClass();
   showSkeleton();
   try {
     await loadManifest();

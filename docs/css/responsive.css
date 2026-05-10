@@ -41,6 +41,13 @@
   .card-media { aspect-ratio: 5 / 4; }
   .card-title { font-size: 1.08rem; }
   .cat-grid { grid-template-columns: 1fr 1fr; }
+  /* Group filter rows stack vertically on small screens so the chips
+     get the full width instead of being squeezed to one side. */
+  .tag-filter-group {
+    grid-template-columns: 1fr;
+    gap: 0.3rem;
+  }
+  .tag-filter-group-label { padding-top: 0; }
 }
 
 @media (max-width: 420px) {

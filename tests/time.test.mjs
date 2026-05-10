@@ -23,6 +23,17 @@ test('parseToMinutes accepts decimal hours', () => {
   assert.equal(parseToMinutes('1.5 hours'), 90);
 });
 
+test('parseToMinutes reads unicode-fraction hours', () => {
+  // Regression: doro-wat / kare-kare wrote times like "1½ hours" but the
+  // parser silently dropped the fraction, leaving the recipe tagged
+  // `quick` despite a multi-hour cook.
+  assert.equal(parseToMinutes('1½ hours'), 90);
+  assert.equal(parseToMinutes('1¼ hours'), 75);
+  assert.equal(parseToMinutes('3½ hours'), 210);
+  assert.equal(parseToMinutes('½ hour'), 30);
+  assert.equal(parseToMinutes('1¾ hours 10 minutes'), 115);
+});
+
 test('parseToMinutes returns 0 for missing or unparseable input', () => {
   assert.equal(parseToMinutes(''), 0);
   assert.equal(parseToMinutes(null), 0);

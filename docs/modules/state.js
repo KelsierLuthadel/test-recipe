@@ -48,8 +48,22 @@ export const state = {
   ratings: storage.ratings.load(),
   notesSlugs: storage.notes.allSlugs(),
   homeSections: loadHomeSections(),
+  allergens: storage.allergens.load(),
+  wine: storage.wine.load(),
+  sides: storage.sides.load(),
   route: { name: 'home' },
 };
+
+// Plan is no longer cached on state — it's always loaded per-week via
+// `loadPlan(iso)` in modules/plan.js, since per-week storage means
+// "the plan" depends on which week the user is viewing. The listener
+// here is kept as a no-op stub so any future reader of plan:changed
+// continues to work.
+if (typeof window !== 'undefined') {
+  window.addEventListener('plan:changed', () => {
+    // no-op
+  });
+}
 
 export function toggleFavourite(slug) {
   if (state.favourites.has(slug)) state.favourites.delete(slug);

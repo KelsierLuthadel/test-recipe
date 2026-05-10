@@ -1,0 +1,74 @@
+/* "Pairs well with" section near the top of meal recipe pages. Shows a
+   small grid of side-dish tiles that link to those recipes. Pre-resolved
+   slugs come from the build (recipe.sidePairings); rules live in
+   side-pairings.json. */
+
+html.side-pairings-hidden .side-pairing { display: none; }
+
+.side-pairing {
+  margin: 1rem 0 1.5rem;
+  padding: 0.85rem 1rem 1rem;
+  background: var(--surface-2);
+  border: 1px solid var(--border);
+  border-left: 3px solid var(--side-accent, #5a7a3a);
+  border-radius: var(--radius);
+}
+
+.side-pairing-label {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  font-size: 0.7rem;
+  font-weight: 600;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+  color: var(--text-3);
+  margin-bottom: 0.55rem;
+}
+.side-pairing-label svg { color: var(--side-accent, #5a7a3a); }
+
+.side-pairing-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
+  gap: 0.5rem;
+}
+
+.side-pairing-tile {
+  display: flex;
+  align-items: center;
+  gap: 0.55rem;
+  padding: 0.4rem 0.55rem;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  text-decoration: none;
+  color: var(--text-1);
+  font-size: 0.85rem;
+  line-height: 1.25;
+  transition: border-color var(--transition), color var(--transition), transform var(--transition);
+}
+.side-pairing-tile:hover {
+  border-color: var(--side-accent, #5a7a3a);
+  color: var(--side-accent, #5a7a3a);
+  transform: translateY(-1px);
+}
+
+.side-pairing-thumb {
+  flex: 0 0 auto;
+  width: 36px;
+  height: 36px;
+  border-radius: 6px;
+  overflow: hidden;
+  background: var(--surface-2);
+}
+.side-pairing-thumb img { width: 100%; height: 100%; object-fit: cover; display: block; }
+.side-pairing-thumb.is-empty { background: var(--surface-2); }
+
+.side-pairing-name {
+  font-weight: 500;
+  text-wrap: balance;
+}
+
+@media (max-width: 600px) {
+  .side-pairing-grid { grid-template-columns: 1fr 1fr; }
+}

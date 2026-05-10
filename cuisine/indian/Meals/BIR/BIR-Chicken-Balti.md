@@ -1,6 +1,8 @@
-## Chicken Balti
+# Chicken Balti
 
-### Overview
+![Chicken Balti](../resources/balti.png)
+
+## Overview
 A fast-cooked, medium-spiced curry with fresh flavours and minimal sauce.
 
 ---

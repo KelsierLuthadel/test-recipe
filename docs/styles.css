@@ -32,9 +32,16 @@
 @import url('css/recipe/notes.css');
 @import url('css/recipe/siblings.css');
 @import url('css/recipe/plan-ahead.css');
+@import url('css/recipe/substitutions.css');
+@import url('css/recipe/allergen-marks.css');
+@import url('css/recipe/wine-pairings.css');
+@import url('css/recipe/side-pairings.css');
+@import url('css/recipe/similar.css');
+@import url('css/recipe/back-to-ingredients.css');
 @import url('css/recipe/cooking-mode.css');
 @import url('css/pages/settings.css');
 @import url('css/pages/collection.css');
 @import url('css/pages/pantry.css');
+@import url('css/pages/plan.css');
 @import url('css/ui/modal.css');
 @import url('css/print.css');

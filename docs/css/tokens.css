@@ -1,5 +1,7 @@
-/* Design tokens. Light values are on :root; the dark theme overrides each
-   token under [data-theme="dark"] (set by the pre-paint script in index.html). */
+/* Design tokens. The default values on :root match the Linen theme so
+   any [data-theme="<name>"] block only needs to override the colour
+   variables, not layout/typography values. The pre-paint script sets
+   data-theme on <html> based on the saved preference. */
 
 :root {
   --bg: #fbfbf9;
@@ -31,6 +33,149 @@
   --font-serif: 'Source Serif 4', Georgia, 'Times New Roman', serif;
 }
 
+/* ===== LINEN (default light, sage accent) ===== */
+[data-theme="linen"] {
+  --bg: #fbfbf9;
+  --surface: #ffffff;
+  --surface-2: #f5f4f0;
+  --surface-hover: #f0efea;
+  --border: #e8e6e1;
+  --border-strong: #d3d0c8;
+  --text: #1c1917;
+  --text-2: #44403c;
+  --text-3: #78716c;
+  --text-faint: #a8a29e;
+  --accent: #5b6e3a;
+  --accent-hover: #4a5a2f;
+  --accent-soft: #eef1e7;
+  --accent-line: #c5d1ad;
+  --shadow-sm: 0 1px 2px rgba(28, 25, 23, 0.04);
+  --shadow-md: 0 4px 12px rgba(28, 25, 23, 0.06), 0 1px 3px rgba(28, 25, 23, 0.04);
+  --topbar-bg: rgba(251, 251, 249, 0.92);
+  --scrim: rgba(28, 25, 23, 0.4);
+  color-scheme: light;
+}
+
+/* ===== MINT (light, cool fresh teal-green) ===== */
+[data-theme="mint"] {
+  --bg: #f4faf6;
+  --surface: #ffffff;
+  --surface-2: #e9f3ec;
+  --surface-hover: #def0e3;
+  --border: #d6e6da;
+  --border-strong: #b4c7b9;
+  --text: #1c2620;
+  --text-2: #3a4a40;
+  --text-3: #6e7e74;
+  --text-faint: #9aa9a0;
+  --accent: #3f8a78;
+  --accent-hover: #2f7263;
+  --accent-soft: #def0e7;
+  --accent-line: #a7d3c5;
+  --shadow-sm: 0 1px 2px rgba(28, 38, 32, 0.04);
+  --shadow-md: 0 4px 12px rgba(28, 38, 32, 0.07), 0 1px 3px rgba(28, 38, 32, 0.04);
+  --topbar-bg: rgba(244, 250, 246, 0.92);
+  --scrim: rgba(28, 38, 32, 0.4);
+  color-scheme: light;
+}
+
+/* ===== BLUSH (light, warm dusty rose) ===== */
+[data-theme="blush"] {
+  --bg: #fbf6f4;
+  --surface: #ffffff;
+  --surface-2: #f4e9e6;
+  --surface-hover: #efe0db;
+  --border: #ebe0dc;
+  --border-strong: #d4c2bc;
+  --text: #241914;
+  --text-2: #4a3833;
+  --text-3: #80706c;
+  --text-faint: #b39e98;
+  --accent: #a85b6e;
+  --accent-hover: #8e4458;
+  --accent-soft: #f5e8ec;
+  --accent-line: #e0bcc8;
+  --shadow-sm: 0 1px 2px rgba(36, 25, 20, 0.05);
+  --shadow-md: 0 4px 12px rgba(36, 25, 20, 0.07), 0 1px 3px rgba(36, 25, 20, 0.04);
+  --topbar-bg: rgba(251, 246, 244, 0.92);
+  --scrim: rgba(36, 25, 20, 0.4);
+  color-scheme: light;
+}
+
+/* ===== CAST IRON (default dark, warm brown-black with sage accent) ===== */
+[data-theme="cast-iron"] {
+  --bg: #14130f;
+  --surface: #1c1b16;
+  --surface-2: #25241e;
+  --surface-hover: #2c2b24;
+  --border: #2f2e27;
+  --border-strong: #45433b;
+  --text: #ece8de;
+  --text-2: #b8b3a4;
+  --text-3: #837e72;
+  --text-faint: #5a564c;
+  --accent: #9ab074;
+  --accent-hover: #abc285;
+  --accent-soft: #1e261a;
+  --accent-line: #3c4d2c;
+  --shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.4);
+  --shadow-md: 0 4px 14px rgba(0, 0, 0, 0.5), 0 1px 4px rgba(0, 0, 0, 0.3);
+  --topbar-bg: rgba(20, 19, 15, 0.92);
+  --scrim: rgba(0, 0, 0, 0.6);
+  color-scheme: dark;
+}
+
+/* ===== MIDNIGHT (dark, deep navy with soft pastel-blue accent) ===== */
+[data-theme="midnight"] {
+  --bg: #0d1726;
+  --surface: #14213a;
+  --surface-2: #1c2c4a;
+  --surface-hover: #243859;
+  --border: #2a3d63;
+  --border-strong: #3f567f;
+  --text: #e2e8f1;
+  --text-2: #a7b4c9;
+  --text-3: #758299;
+  --text-faint: #4d566c;
+  --accent: #8aaedb;
+  --accent-hover: #9dbee6;
+  --accent-soft: #1c2c4a;
+  --accent-line: #3f567f;
+  --shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.4);
+  --shadow-md: 0 4px 14px rgba(0, 0, 0, 0.5), 0 1px 4px rgba(0, 0, 0, 0.3);
+  --topbar-bg: rgba(13, 23, 38, 0.92);
+  --scrim: rgba(0, 0, 0, 0.6);
+  color-scheme: dark;
+}
+
+/* ===== PLUM (dark, deep aubergine with dusty lavender accent) ===== */
+[data-theme="plum"] {
+  --bg: #1a1320;
+  --surface: #231828;
+  --surface-2: #2c1f33;
+  --surface-hover: #36273e;
+  --border: #3a2c42;
+  --border-strong: #56445e;
+  --text: #ece5ee;
+  --text-2: #c0b3c5;
+  --text-3: #8b7e91;
+  --text-faint: #5d525f;
+  --accent: #b69cc7;
+  --accent-hover: #c8b0d8;
+  --accent-soft: #2c1f33;
+  --accent-line: #5e4d68;
+  --shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.4);
+  --shadow-md: 0 4px 14px rgba(0, 0, 0, 0.5), 0 1px 4px rgba(0, 0, 0, 0.3);
+  --topbar-bg: rgba(26, 19, 32, 0.92);
+  --scrim: rgba(0, 0, 0, 0.6);
+  color-scheme: dark;
+}
+
+/* ===== Legacy mappings — older saves used 'light'/'dark' before the
+   theme picker. The pre-paint script normalises these on first read,
+   but if any stale data slips through, point them at the canonical
+   theme so the page still renders correctly. ===== */
+[data-theme="light"] { color-scheme: light; }
 [data-theme="dark"] {
   --bg: #14130f;
   --surface: #1c1b16;

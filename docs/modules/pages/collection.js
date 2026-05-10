@@ -21,6 +21,7 @@ import {
 } from '../ui/empty-state.js';
 import { showToast } from '../ui/toast.js';
 import { renderNotFound } from './not-found.js';
+import { visibleRecipes } from '../allergens.js';
 
 const BACK_ARROW = `<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><polyline points="15 18 9 12 15 6"/></svg>`;
 const BACK_BTN = `<div class="page-back"><a class="back-button" href="#/">${BACK_ARROW}Back to Home</a></div>`;
@@ -29,9 +30,9 @@ export function renderCollection(id) {
   const c = findCollection(id);
   if (!c) return renderNotFound(`Collection "${id}" not found.`);
 
-  const recipes = c.slugs
+  const recipes = visibleRecipes(c.slugs
     .map(slug => state.recipeBySlug.get(slug))
-    .filter(Boolean);
+    .filter(Boolean));
 
   const eyebrow = c.builtin ? 'Saved' : 'Collection';
   // The title row holds the page title and the ⋯ manage menu for

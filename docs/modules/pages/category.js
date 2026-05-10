@@ -13,6 +13,7 @@ import { cardHtml, catTileHtml, pickCategoryFeatured } from '../cards.js';
 import { tagFilterHtml } from '../tags.js';
 import { escapeHtml } from '../util/dom.js';
 import { renderNotFound } from './not-found.js';
+import { visibleRecipes } from '../allergens.js';
 
 function categoryBackButton(path) {
   const parts = path.split('/');
@@ -39,7 +40,7 @@ export function renderCategory(path) {
 
   const subTiles = (node.subcategories || []).map(s => catTileHtml(s)).join('');
 
-  const directRecipes = node.recipes || [];
+  const directRecipes = visibleRecipes(node.recipes || []);
   const activeTags = Array.isArray(state.route.tags) ? state.route.tags : [];
   const filteredRecipes = activeTags.length
     ? directRecipes.filter(r => Array.isArray(r.tags) && activeTags.every(t => r.tags.includes(t)))

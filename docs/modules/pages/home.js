@@ -8,6 +8,7 @@ import * as storage from '../storage.js';
 import { escapeHtml } from '../util/dom.js';
 import { cardHtml, catTileHtml, pickFeatured } from '../cards.js';
 import { navigate, discoverHash } from '../routes.js';
+import { visibleRecipes } from '../allergens.js';
 
 const HOME_CARD_LIMIT = 4;
 
@@ -40,35 +41,35 @@ export function renderHome() {
     `;
   }
 
-  const favRecipes = [...state.favourites]
+  const favRecipes = visibleRecipes([...state.favourites]
     .map(slug => state.recipeBySlug.get(slug))
-    .filter(Boolean);
+    .filter(Boolean));
 
-  const recentRecipesAll = state.recent
+  const recentRecipesAll = visibleRecipes(state.recent
     .map(slug => state.recipeBySlug.get(slug))
     .filter(Boolean)
-    .filter(r => !state.favourites.has(r.slug));
+    .filter(r => !state.favourites.has(r.slug)));
 
   const ratingsMap = state.ratings || {};
-  const topRatedRecipes = Object.entries(ratingsMap)
+  const topRatedRecipes = visibleRecipes(Object.entries(ratingsMap)
     .filter(([, v]) => v >= 4)
     .sort((a, b) => b[1] - a[1])
     .map(([slug]) => state.recipeBySlug.get(slug))
-    .filter(Boolean);
+    .filter(Boolean));
 
-  const notesRecipes = [...state.notesSlugs]
+  const notesRecipes = visibleRecipes([...state.notesSlugs]
     .map(slug => state.recipeBySlug.get(slug))
-    .filter(Boolean);
+    .filter(Boolean));
 
   const cookedMap = storage.cooked.load();
-  const cookedRecipes = Object.entries(cookedMap)
+  const cookedRecipes = visibleRecipes(Object.entries(cookedMap)
     .sort((a, b) => {
       const da = a[1] && a[1].last ? Date.parse(a[1].last) : 0;
       const db = b[1] && b[1].last ? Date.parse(b[1].last) : 0;
       return db - da;
     })
     .map(([slug]) => state.recipeBySlug.get(slug))
-    .filter(Boolean);
+    .filter(Boolean));
 
   const favSection      = sectionHtml('favourites', 'Your favourites',     favRecipes,      '#/favourites');
   const recentSection   = sectionHtml('recent',     'Recently viewed',     recentRecipesAll, '#/recent');

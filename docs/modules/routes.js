@@ -16,6 +16,13 @@ export function parseRoute() {
   if (path === '/pantry') {
     return { name: 'pantry', have: parseTagsParam(params.get('have')) };
   }
+  if (path === '/plan') {
+    return {
+      name: 'plan',
+      month: params.get('m') || null,
+      date: params.get('d') || null,
+    };
+  }
   if (path === '/favourites') return { name: 'favourites' };
   if (path === '/recent') return { name: 'recent' };
   if (path === '/top-rated') return { name: 'top-rated' };
@@ -85,6 +92,17 @@ export function pantryHash(ingredients) {
   if (!ingredients) return '#/pantry';
   const list = Array.isArray(ingredients) ? ingredients : [ingredients];
   return list.length ? `#/pantry?have=${encodeURIComponent(list.join(','))}` : '#/pantry';
+}
+
+// Build a meal-plan URL.  `monthIso` ("YYYY-MM") and `dayIso`
+// ("YYYY-MM-DD") are both optional; when day is set, month is implied
+// by the day. Use planHash() with no args for the current month, no day.
+export function planHash({ month, date } = {}) {
+  const params = new URLSearchParams();
+  if (date) params.set('d', date);
+  else if (month) params.set('m', month);
+  const q = params.toString();
+  return q ? `#/plan?${q}` : '#/plan';
 }
 
 // Build a discover-page URL with the current tag selection.

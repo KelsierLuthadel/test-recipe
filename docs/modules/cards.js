@@ -12,6 +12,7 @@ import { els, state } from './state.js';
 import { rawUrl, categoryNode, flattenRecipes } from './manifest.js';
 import { recipeHash, categoryHash } from './routes.js';
 import { TAG_LABELS } from './tags.js';
+import { recipeBlockedByAllergens } from './allergens.js';
 
 // Top-level categories whose recipes shouldn't bubble up to "featured" on the
 // home page (they're component recipes, not finished dishes).
@@ -152,6 +153,7 @@ export function pickFeatured(n) {
     const top = r.path.split('/')[0];
     if (FEATURED_EXCLUDED_TOP.has(top)) return false;
     if (FEATURED_EXCLUDED_PATH.test(r.path)) return false;
+    if (recipeBlockedByAllergens(r)) return false;
     return true;
   });
   return shuffleAndTake(candidates, n);
@@ -162,6 +164,7 @@ export function pickCategoryFeatured(node, n) {
     if (!r.image || !r.overview) return false;
     // Skip spice / spice-mix recipes regardless of which sub-tree they live in.
     if (FEATURED_EXCLUDED_PATH.test(r.path)) return false;
+    if (recipeBlockedByAllergens(r)) return false;
     return true;
   });
   return shuffleAndTake(candidates, n);

@@ -5,12 +5,13 @@
 import { state, setContent } from '../state.js';
 import { cardHtml } from '../cards.js';
 import { escapeHtml } from '../util/dom.js';
+import { visibleRecipes } from '../allergens.js';
 
 function searchRecipes(q) {
   const needle = q.toLowerCase();
   const tokens = needle.split(/\s+/).filter(Boolean);
   const out = [];
-  for (const r of state.flatRecipes) {
+  for (const r of visibleRecipes(state.flatRecipes)) {
     const title = (r.title || '').toLowerCase();
     const overview = (r.overview || '').toLowerCase();
     const path = (r.path || '').toLowerCase();

@@ -1,6 +1,8 @@
-## Butter Chicken
+# Butter Chicken
 
-### Overview
+![Butter Chicken](../resources/butter-chicken.png)
+
+## Overview
 A rich, creamy tomato-based curry with mild spice and buttery finish. A BIR-style adaptation of murgh makhani.
 
 ---

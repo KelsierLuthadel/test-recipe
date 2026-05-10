@@ -79,11 +79,98 @@
   background: #fef2f2;
   border-color: #fca5a5;
 }
-[data-theme="dark"] .settings-danger-btn {
+[data-theme-family="dark"] .settings-danger-btn {
   color: #fca5a5;
   border-color: #5b1c1c;
 }
-[data-theme="dark"] .settings-danger-btn:hover {
+[data-theme-family="dark"] .settings-danger-btn:hover,
+[data-theme="cast-iron"] .settings-danger-btn:hover,
+[data-theme="midnight"] .settings-danger-btn:hover,
+[data-theme="plum"] .settings-danger-btn:hover {
   background: #2d1414;
   border-color: #7f1d1d;
+}
+
+/* Theme picker — chips with a colour swatch, the theme label, and a
+   light/dark family tag. Active chip outlined in accent; the radio
+   itself is hidden behind the swatch for the click affordance. */
+.settings-theme-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(170px, 1fr));
+  gap: 0.5rem;
+}
+.settings-theme-chip {
+  position: relative;
+  display: flex;
+  align-items: center;
+  gap: 0.55rem;
+  padding: 0.6rem 0.75rem;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  cursor: pointer;
+  user-select: none;
+  transition: border-color var(--transition), box-shadow var(--transition);
+}
+.settings-theme-chip:hover { border-color: var(--accent-line); }
+.settings-theme-chip.is-active {
+  border-color: var(--accent);
+  box-shadow: 0 0 0 1px var(--accent);
+}
+.settings-theme-chip input[type="radio"] {
+  position: absolute;
+  opacity: 0;
+  inset: 0;
+  cursor: pointer;
+}
+.settings-theme-swatch {
+  flex-shrink: 0;
+  width: 36px;
+  height: 36px;
+  border-radius: 6px;
+  border: 1px solid var(--border);
+  position: relative;
+  overflow: hidden;
+}
+.settings-theme-swatch::before,
+.settings-theme-swatch::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+}
+.settings-theme-swatch::after {
+  width: 38%;
+  left: auto;
+  right: 0;
+  border-left: 1px solid rgba(0, 0, 0, 0.06);
+}
+.settings-theme-swatch[data-swatch="linen"]::before { background: #fbfbf9; }
+.settings-theme-swatch[data-swatch="linen"]::after  { background: #5b6e3a; }
+.settings-theme-swatch[data-swatch="mint"]::before  { background: #f4faf6; }
+.settings-theme-swatch[data-swatch="mint"]::after   { background: #3f8a78; }
+.settings-theme-swatch[data-swatch="blush"]::before { background: #fbf6f4; }
+.settings-theme-swatch[data-swatch="blush"]::after  { background: #a85b6e; }
+.settings-theme-swatch[data-swatch="cast-iron"]::before { background: #14130f; }
+.settings-theme-swatch[data-swatch="cast-iron"]::after  { background: #9ab074; }
+.settings-theme-swatch[data-swatch="midnight"]::before { background: #0d1726; }
+.settings-theme-swatch[data-swatch="midnight"]::after  { background: #8aaedb; }
+.settings-theme-swatch[data-swatch="plum"]::before { background: #1a1320; }
+.settings-theme-swatch[data-swatch="plum"]::after  { background: #b69cc7; }
+.settings-theme-label {
+  flex: 1;
+  font-weight: 500;
+  color: var(--text-1);
+  font-size: 0.95rem;
+}
+.settings-theme-family {
+  font-size: 0.65rem;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+  font-weight: 600;
+  color: var(--text-3);
+}
+.settings-theme-chip.is-dark .settings-theme-family {
+  background: var(--surface-2);
+  padding: 1px 7px;
+  border-radius: 999px;
 }

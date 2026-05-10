@@ -40,14 +40,17 @@ function walk(dir, files = []) {
 
 // Same regexes as scripts/build-manifest.mjs, intentionally; the doctor's
 // job is to flag anything the build extractors would silently drop.
+// Method / Ingredients accept a trailing suffix on the heading
+// (e.g. "## Method - Roasting", "## Ingredients (For Dry Spice Mix)")
+// so the linter doesn't fight legitimate multi-variant recipes.
 const TITLE_RE     = /^#\s+(.+?)\s*$/m;
 const IMAGE_RE     = /!\[[^\]]*\]\(([^)]+)\)/;
 const SERVES_RE    = /^\*\*(?:Serves|Makes|Yield):\*\*\s*(.+?)\s*$/mi;
 const PREP_RE      = /^\*\*Prep Time:\*\*\s*(.+?)\s*$/mi;
 const COOK_RE      = /^\*\*Cook Time:\*\*\s*(.+?)\s*$/mi;
-const OVERVIEW_RE  = /^##\s+Overview\s*$/mi;
-const INGRED_RE    = /^##\s+Ingredients\s*$/mi;
-const METHOD_RE    = /^##\s+Method\s*$/mi;
+const OVERVIEW_RE  = /^##\s+Overview\b/mi;
+const INGRED_RE    = /^##\s+Ingredients\b/mi;
+const METHOD_RE    = /^##\s+Method\b/mi;
 // Bullet line under ## Ingredients - used to flag empty ingredient blocks.
 const BULLET_RE    = /^[-*]\s+\S/m;
 
@@ -70,9 +73,10 @@ function check(file) {
     }
   }
 
-  if (!METHOD_RE.test(md)) issues.push({ level: 'err', msg: 'no `## Method` section' });
-
   // --- WARNINGS ----------------------------------------------------------
+  // No Method is a quality concern, not a build-blocker (the build script
+  // never extracts Method - it's just rendered as markdown).
+  if (!METHOD_RE.test(md)) issues.push({ level: 'warn', msg: 'no `## Method` section' });
   if (!OVERVIEW_RE.test(md)) issues.push({ level: 'warn', msg: 'no `## Overview` section' });
 
   if (!INGRED_RE.test(md)) {

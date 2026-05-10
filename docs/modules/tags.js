@@ -51,6 +51,54 @@ export const TAG_ORDER = [
   'spices', 'pastes',
 ];
 
+// Group taxonomy for the chip filter bar. Each group renders as its own
+// row with a label and a slightly different accent so the user can
+// quickly scan by intent. Tags not assigned here fall into 'other' and
+// land at the bottom (lets newly-introduced build tags surface without
+// a code change).
+export const TAG_GROUP_ORDER = ['diet', 'course', 'ingredient', 'other'];
+export const TAG_GROUP_LABELS = {
+  diet:       'Diet & speed',
+  course:     'Course & method',
+  ingredient: 'Ingredients',
+  other:      'Other',
+};
+export const TAG_GROUPS = {
+  // diet / speed / dietary constraints - green tint
+  vegetarian:    'diet',
+  vegan:         'diet',
+  'gluten-free': 'diet',
+  'dairy-free':  'diet',
+  quick:         'diet',
+  complex:       'diet',
+  spicy:         'diet',
+
+  // course / method / cuisine character - blue tint
+  meals:        'course',
+  baking:       'course',
+  dessert:      'course',
+  sides:        'course',
+  salsa:        'course',
+  curry:        'course',
+  asian:        'course',
+  'no-cook':    'course',
+  'make-ahead': 'course',
+  'one-pan':    'course',
+  spices:       'course',
+  pastes:       'course',
+
+  // protein / main ingredient - red tint
+  meat:    'ingredient',
+  chicken: 'ingredient',
+  beef:    'ingredient',
+  pork:    'ingredient',
+  lamb:    'ingredient',
+  duck:    'ingredient',
+  fish:    'ingredient',
+  prawn:   'ingredient',
+  salmon:  'ingredient',
+};
+
 // Build the chip row that lets the user filter the current view by tag.
 // hashBuilder(tags) returns the URL for a given list of active tags, so
 // the same component works on the category, search, and discover pages.
@@ -83,18 +131,47 @@ export function tagFilterHtml(candidates, activeTags, hashBuilder, basePool = ca
   const available = [...known, ...extra];
   if (!available.length) return '';
 
-  const allChip = `<a class="tag-chip ${active.length === 0 ? 'is-active' : ''}" href="${hashBuilder([])}">All <span class="tag-chip-count">${candidates.length}</span></a>`;
-  const tagChips = available.map(t => {
+  // Bucket each available tag into its group. Unknown groups fall under
+  // 'other' so the chip still renders.
+  const grouped = new Map();
+  for (const g of TAG_GROUP_ORDER) grouped.set(g, []);
+  for (const t of available) {
+    const g = TAG_GROUPS[t] || 'other';
+    if (!grouped.has(g)) grouped.set(g, []);
+    grouped.get(g).push(t);
+  }
+
+  const chipFor = (t) => {
     const isOn = active.includes(t);
     const count = candidateCounts[t] || 0;
     const label = TAG_LABELS[t] || t;
+    const group = TAG_GROUPS[t] || 'other';
     // A non-selected chip with 0 candidates can't usefully be added, so
     // we render it as a non-interactive span instead of a link.
     if (!isOn && count === 0) {
-      return `<span class="tag-chip is-disabled" aria-disabled="true">${escapeHtml(label)} <span class="tag-chip-count">0</span></span>`;
+      return `<span class="tag-chip is-disabled" data-group="${escapeHtml(group)}" aria-disabled="true">${escapeHtml(label)} <span class="tag-chip-count">0</span></span>`;
     }
     const next = isOn ? active.filter(x => x !== t) : [...active, t];
-    return `<a class="tag-chip ${isOn ? 'is-active' : ''}" href="${hashBuilder(next)}">${escapeHtml(label)} <span class="tag-chip-count">${count}</span></a>`;
-  }).join('');
-  return `<div class="tag-filters" role="toolbar" aria-label="Filter by tag"><span class="tag-filters-label">Filter:</span>${allChip}${tagChips}</div>`;
+    return `<a class="tag-chip ${isOn ? 'is-active' : ''}" data-group="${escapeHtml(group)}" href="${hashBuilder(next)}">${escapeHtml(label)} <span class="tag-chip-count">${count}</span></a>`;
+  };
+
+  const allChip = `<a class="tag-chip ${active.length === 0 ? 'is-active' : ''}" data-group="all" href="${hashBuilder([])}">All <span class="tag-chip-count">${candidates.length}</span></a>`;
+
+  const groupRows = TAG_GROUP_ORDER
+    .map(g => {
+      const tags = grouped.get(g) || [];
+      if (!tags.length) return '';
+      const label = TAG_GROUP_LABELS[g] || g;
+      const chips = tags.map(chipFor).join('');
+      return `<div class="tag-filter-group" data-group="${escapeHtml(g)}"><span class="tag-filter-group-label">${escapeHtml(label)}</span><div class="tag-filter-group-chips">${chips}</div></div>`;
+    })
+    .filter(Boolean)
+    .join('');
+
+  return `
+    <div class="tag-filters" role="toolbar" aria-label="Filter by tag">
+      <div class="tag-filter-group tag-filter-group-all"><span class="tag-filter-group-label">Filter</span><div class="tag-filter-group-chips">${allChip}</div></div>
+      ${groupRows}
+    </div>
+  `;
 }

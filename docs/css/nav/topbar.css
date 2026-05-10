@@ -61,8 +61,8 @@
 .topbar-link.icon-only { padding: 0.35rem 0.5rem; }
 #theme-toggle .theme-icon-light { display: inline; }
 #theme-toggle .theme-icon-dark { display: none; }
-[data-theme="dark"] #theme-toggle .theme-icon-light { display: none; }
-[data-theme="dark"] #theme-toggle .theme-icon-dark { display: inline; }
+[data-theme-family="dark"] #theme-toggle .theme-icon-light { display: none; }
+[data-theme-family="dark"] #theme-toggle .theme-icon-dark { display: inline; }
 
 .aa-icon {
   font-family: var(--font-serif);

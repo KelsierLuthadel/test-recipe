@@ -114,3 +114,21 @@
   color: var(--text-3);
   text-align: center;
 }
+
+/* Tier headings: full matches get the accent treatment; partial matches
+   are dimmed so the user's eye lands on the perfect-fit section first. */
+.pantry-tier { margin-top: 1.25rem; }
+.pantry-tier-full { color: var(--accent); }
+.pantry-tier-partial { color: var(--text-3); }
+.pantry-tier-count {
+  display: inline-block;
+  margin-left: 0.45rem;
+  padding: 1px 8px;
+  font-size: 0.7rem;
+  font-weight: 600;
+  background: var(--surface-2);
+  color: var(--text-2);
+  border-radius: 999px;
+  vertical-align: 2px;
+}
+.pantry-tier-full .pantry-tier-count { background: var(--accent-soft); color: var(--accent); }
